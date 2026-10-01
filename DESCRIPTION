@@ -1,0 +1,18 @@
+Package: okaapi
+Title: Generate, visualize and quantify trait preference network
+Version: 0.1.0
+Authors@R: 
+    person("Josefine Bohr", "Brask", , "bohrbrask@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9025-5204"))
+Description: A set of functions for generating trait preference networks (adjacency matrices), 
+    vizualising trait preference networks, and measuring network metrics on sets of trait preference networks.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    igraph,
+    sna,
+    truncnorm,
+    wrswoR
