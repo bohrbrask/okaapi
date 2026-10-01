@@ -17,7 +17,7 @@
 #' * Similarity preferences with categorical traits give modularity and trait assortativity.
 #' * Similarity preferences with continuous traits give assortativity (without modularity).
 #'
-#' For details about how the trait preference model generates networks, see Brask et al. in References below.
+#' For details about how the trait preference model generates networks, see references below.
 #' Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values
 #' and the social preference type and importance (weight) given for each trait. From this, a network is constructed where pairs
 #' with higher social attraction have a higher chance of getting a link.
@@ -79,9 +79,8 @@
 #' @param owntraitclasses A vector of strings indicating the trait class for each trait for which trait values are provided by the user ('cate' or 'cont'; see Details)
 #' @param owntraitvals A matrix with a column with trait values for traits where trait values are provided by the user (can be a vector if there is only a single trait)
 #'
-#' @return A list containing the following:
+#' @return A plot of the network (only if `visnet` = TRUE) and a list containing the following:
 #' * `net`: the network matrix
-#' * `traitnetplot`: a plot of the network (only if `visnet` = TRUE)
 #' * `traitvals`: a matrix with all the trait values (both generated and user-supplied)
 #' * `sociatvals`: a vector with a social attraction value for each dyad
 
@@ -260,14 +259,10 @@ traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, one
   }
 
   if (visnet == TRUE){
-    traitnetplot <- traitnetvisual(net = net, traitclasses = traitclasses, preftypes = preftypes, linktype = linktype, wvals = wvals, traitvals = traitvals)
+    traitnetvisual(net = net, traitclasses = traitclasses, preftypes = preftypes, linktype = linktype, wvals = wvals, traitvals = traitvals)
   }
 
-  if (visnet == TRUE){
-    return(list(net=net, traitnetplot=traitnetplot, traitvals = traitvals, sociatvals = sociatvals))
-  } else if (visnet == FALSE){
-    return(list(net = net, traitvals = traitvals, sociatvals = sociatvals))
-  }
+  return(list(net = net, traitvals = traitvals, sociatvals = sociatvals))
 
 }
 

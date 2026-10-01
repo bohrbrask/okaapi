@@ -42,10 +42,9 @@ traitnet(
 \item{owntraitvals}{A matrix with a column with trait values for traits where trait values are provided by the user (can be a vector if there is only a single trait)}
 }
 \value{
-A list containing the following:
+A plot of the network (only if \code{visnet} = TRUE) and a list containing the following:
 \itemize{
 \item \code{net}: the network matrix
-\item \code{traitnetplot}: a plot of the network (only if \code{visnet} = TRUE)
 \item \code{traitvals}: a matrix with all the trait values (both generated and user-supplied)
 \item \code{sociatvals}: a vector with a social attraction value for each dyad
 }
@@ -69,7 +68,7 @@ Network structures that can be generated include random, modular, assorted (with
 \item Similarity preferences with continuous traits give assortativity (without modularity).
 }
 
-For details about how the trait preference model generates networks, see Brask et al. in References below.
+For details about how the trait preference model generates networks, see references below.
 Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values
 and the social preference type and importance (weight) given for each trait. From this, a network is constructed where pairs
 with higher social attraction have a higher chance of getting a link.
