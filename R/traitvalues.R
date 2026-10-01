@@ -59,6 +59,9 @@
 
 
 traitvalues <- function(n, traittype, ncats) {
+  if (length(n)==0 || length(traittype)==0 || length(ncats)==0) {
+    stop('Input without defaults must not be empty.')
+  }
   if (n <= 0 || is.na(n)) {
     stop('n must be positive.')
   }

@@ -107,7 +107,7 @@
 traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitvals) {
 
   if(any(is.na(net))) {
-    stop("The network must not contain NA's.")
+    stop("The input network must not contain NA's.")
   }
   if(any(diag(net)!=0)) {
     stop("The input network must have only zeros in the diagonal.")
@@ -119,36 +119,39 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
     stop("The sum of wvals must not exceed 1.")
   }
   if(any(wvals <0)||any(wvals >1)) {
-    stop("all entries in wvals must be between 0 and 1.")
+    stop("All entries in wvals must be between 0 and 1.")
   }
   inputlengths <- c(length(traitclasses), length(preftypes), length(wvals), ncol(traitvals))
+  if(any(inputlengths ==0)) {
+    stop("Input without defaults must not be empty.")
+  }
   if(any(inputlengths != length(traitclasses))) {
-    stop("input lengths do not fit.")
+    stop("Input lengths do not fit.")
   }
   if(nrow(net) != nrow(as.matrix(traitvals))) {
     stop("net and traitvals must have the same number of rows.")
   }
   if (!(linktype %in% c('stow','detw','unw')) ) {
-    stop('input linktype is incorrect.')
+    stop('Linktype is incorrect.')
   }
   if (!all(traitclasses %in% c('cate','cont')) ) {
-    stop('input traitclasses are incorrect.')
+    stop('traitclasses are incorrect.')
   }
   if(any(is.na(traitvals))) {
     stop("traitvals must not contain NA's.")
   }
   if (!all(preftypes %in% c('sim','pop')) ) {
-    stop('input preftypes are incorrect.')
+    stop('preftypes are incorrect.')
   }
   tmat <- as.matrix(traitvals)
   tcate <- tmat[,traitclasses == 'cate']
   tcont <- tmat[,traitclasses == 'cont']
   tcatediv <- tcate/round(tcate)
   if (any(tcatediv != 1)) {
-    stop('categorical trait values must be integers.')
+    stop('Categorical trait values must be integers.')
   }
   if (any(tcont<0)||any(tcont>1)) {
-    stop('continuous trait values must be in the range from 0 to 1.')
+    stop('Continuous trait values must be in the range from 0 to 1.')
   }
 
   n <- nrow(net)

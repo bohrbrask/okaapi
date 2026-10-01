@@ -69,7 +69,13 @@ contincols <- function(cols, colvals){
     stop("cols must not contain NA's")
   }
   if(any(colvals>1) || any(colvals<0)) {
-    stop("colvals must be between 0 and 1")
+    stop("Values in colvals must be between 0 and 1")
+  }
+  if(length(cols)<2) {
+    stop("cols must contain at least two values")
+  }
+  if(length(colvals)==0) {
+    stop("colvals must not be empty")
   }
   colfunction <- colorRamp(cols)
   nodecolsraw <- colfunction(colvals)

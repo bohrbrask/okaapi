@@ -136,6 +136,9 @@
 
 traitnetsmetrics <-  function(n, k, traittypes, allncats, preftypes, linktype, wvals, onecomp, nrepls, metrics, showrepl = TRUE, owntraitclasses = NULL, owntraitvals = NULL){
 
+  if(length(n)==0 || length(k)==0 || length(traittypes)==0 || length(allncats)==0 || length(preftypes)==0 || length(linktype)==0 || length(wvals)==0 || length(onecomp)==0 || length(nrepls)==0 || length(metrics)==0) {
+    stop("Input without defaults must not be empty")
+  }
   if (n <= 0 || is.na(n)) {
     stop('n must be positive.')
   }
@@ -146,35 +149,35 @@ traitnetsmetrics <-  function(n, k, traittypes, allncats, preftypes, linktype, w
     stop("The sum of wvals must not exceed 1.")
   }
   if(any(wvals <0)||any(wvals >1)) {
-    stop("all entries in wvals must be between 0 and 1.")
+    stop("All entries in wvals must be between 0 and 1.")
   }
   inputlengths <- c(length(traittypes), length(allncats), length(preftypes), length(wvals))
   if(any(inputlengths != inputlengths[1])) {
-    stop("lengths of input arguments do not fit.")
+    stop("Lengths of input do not fit.")
   }
   if (!(linktype %in% c('stow','detw','unw')) ) {
-    stop('input linktype is incorrect.')
+    stop('linktype is incorrect.')
   }
   if (!all(preftypes %in% c('sim','pop')) ) {
-    stop('input preftypes are incorrect.')
+    stop('preftypes are incorrect.')
   }
   if (!all(traittypes %in% c('cate','tnorm','ranks', 'unif', 'own')) ) {
-    stop('input traittypes is incorrect.')
+    stop('traittypes is incorrect.')
   }
   if(any(is.na(owntraitvals))) {
     stop("owntraitvals must not contain NA's.")
   }
   if (!is.null(owntraitclasses)) {
     if (!all(owntraitclasses %in% c('cate','cont')) ) {
-      stop('owntraitclasses are incorrect.')
+      stop('owntraitclasses is incorrect.')
     }
     inputlengthsown <- c(length(owntraitclasses), ncol(as.matrix(owntraitvals)), length(which(traittypes == 'own')) )
     if(any(inputlengthsown != inputlengthsown[1])) {
-      stop("lengths of input arguments do not fit.")
+      stop("Input lengths do not fit.")
     }
   }
   if (!all(metrics %in% c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw', 'degassort', 'degassortw', 'degvar', 'degvarw')) ) {
-    stop('input metrics are incorrect.')
+    stop('metrics is incorrect.')
   }
   if (!is.null(owntraitvals)) {
     owntmat <- as.matrix(owntraitvals)
@@ -182,10 +185,10 @@ traitnetsmetrics <-  function(n, k, traittypes, allncats, preftypes, linktype, w
     owntcont <- owntmat[,owntraitclasses == 'cont']
     owntcatediv <- owntcate/round(owntcate)
     if (any(owntcatediv != 1)) {
-      stop('categorical trait values must be integers.')
+      stop('Categorical trait values must be integers.')
     }
     if (any(owntcont<0)||any(owntcont>1)) {
-      stop('continuous trait values must be in the range from 0 to 1.')
+      stop('Continuous trait values must be in the range from 0 to 1.')
     }
   }
 

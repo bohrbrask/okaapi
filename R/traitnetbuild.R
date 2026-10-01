@@ -68,6 +68,9 @@
 
 traitnetbuild <- function(n, k, linktype, sociatvals){
 
+  if(length(n)==0 || length(k)==0 || length(linktype)==0 || length(sociatvals)==0) {
+    stop("Input without defaults must not be empty")
+  }
   if (n <= 0 || is.na(n)) {
     stop('n must be positive.')
   }
@@ -75,10 +78,10 @@ traitnetbuild <- function(n, k, linktype, sociatvals){
     stop('k must be positive.')
   }
   if (!(linktype %in% c('stow','detw','unw')) ) {
-    stop('input linktype is incorrect')
+    stop('linktype is incorrect')
   }
   if (length(sociatvals) != ((n*n-n)/2)) {
-    stop('length of sociatvals does not fit with n')
+    stop('Length of sociatvals does not fit with n')
   }
 
   ndyads <- (n*n-n)/2

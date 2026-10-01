@@ -91,6 +91,9 @@
 
 netmetrics <- function(net, metrics){
 
+  if(length(net)==0 || length(netmetrics)==0 ) {
+    stop("Input must not be empty")
+  }
   if(any(diag(net)!=0)) {
     stop("The input network must have only zeros in the diagonal.")
   }
@@ -98,10 +101,10 @@ netmetrics <- function(net, metrics){
     stop("The input network must be symmetric.")
   }
   if(any(is.na(net))) {
-    stop("The network must not contain NA's.")
+    stop("The input network must not contain NA's.")
   }
   if (!all(metrics %in% c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw', 'degassort', 'degassortw', 'degvar', 'degvarw')) ) {
-    stop('input metrics are incorrect.')
+    stop('metrics is incorrect.')
   }
 
   metricvals <- rep(NA, length(metrics))

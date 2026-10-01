@@ -97,21 +97,24 @@
 
 traitnetsociat <- function(traitclasses, preftypes, wvals, traitvals){
 
+  if(length(traitclasses)==0 || length(preftypes)==0 || length(wvals)==0 || length(traitvals)==0) {
+    stop("Input without defaults must not be empty")
+  }
   if(sum(wvals) > 1) {
     stop("The sum of wvals must not exceed 1.")
   }
   if(any(wvals <0)||any(wvals >1)) {
-    stop("all entries in wvals must be between 0 and 1.")
+    stop("All entries in wvals must be between 0 and 1.")
   }
   if (!all(traitclasses %in% c('cate','cont')) ) {
-    stop('input traitclasses are incorrect.')
+    stop('traitclasses are incorrect.')
   }
   inputlengths <- c(length(traitclasses), length(preftypes), length(wvals), ncol(traitvals))
   if(any(inputlengths != length(traitclasses))) {
-    stop("inputs must have the same lengths.")
+    stop("Inputs must have the same lengths.")
   }
   if (!all(preftypes %in% c('sim','pop')) ) {
-    stop('input preftypes are incorrect.')
+    stop('preftypes are incorrect.')
   }
   if(any(is.na(traitvals))) {
     stop("traitvals must not contain NA's.")
@@ -121,10 +124,10 @@ traitnetsociat <- function(traitclasses, preftypes, wvals, traitvals){
   tcont <- tmat[,traitclasses == 'cont']
   tcatediv <- tcate/round(tcate)
   if (any(tcatediv != 1)) {
-    stop('categorical trait values must be integers.')
+    stop('Categorical trait values must be integers.')
   }
   if (any(tcont<0)||any(tcont>1)) {
-    stop('continuous trait values must be in the range from 0 to 1.')
+    stop('Continuous trait values must be in the range from 0 to 1.')
   }
 
   simprefs <- function(simtype, tsim){
