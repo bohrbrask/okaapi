@@ -8,37 +8,19 @@
 #' And as a tool to generate networks with specific structural properties (potentially disregarding the preference interpretation).
 #'
 #' The function can create networks going from randomly structured to strongly influenced by trait preferences.
-#' One or more traits, and different types of social preferences, can influence the network structure.
+#' One or more traits, and different types of trait preferences, can influence the network structure.
 #' The trait values of individuals can be simulated (based on different trait types), or given as input by the user.
-#' The traits (and thereby also the preference types) can vary in their importance (their influence on the structure).
+#' The traits (and thereby also the preference types) can vary in their importance.
 #'
-#' Network structures that can be generated include random, modular, assorted (with or without modularity), centralized, and mixes of these in any ratio.
+#' Global structural patterns that can be generated include random, modular, assorted (with or without modularity), disassorted, centralized, and mixes of these in any ratio.
 #' * Popularity preferences give centralization.
-#' * Similarity preferences with categorical traits give modularity and trait assortativity.
-#' * Similarity preferences with continuous traits give assortativity (without modularity).
+#' * Similarity preferences with categorical traits give modularity and trait (dis)assortativity.
+#' * Similarity preferences with continuous traits give (dis)assortativity (without modularity).
 #'
 #' For details about how the trait preference model generates networks, see references below.
-#' Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values
-#' and the social preference type and importance (weight) given for each trait. From this, a network is constructed where pairs
-#' with higher social attraction have a higher chance of getting a link.
-#'
-#'
-#' The `traittypes`, `allncats`, `preftypes`, and `wvals` arguments must fit together in terms of order (and have the same length),
-#' because the function assumes that the entries in the same place in these vectors fit together.
-#' For example, the first trait type in the `traittypes` vector will be used with the first preference type in the `preftypes` vector,
-#' the first importance value in the `wvals` vector, and the first category number (which may be NA) in the `allncats` vector.
-#'
-#' About `traittypes`:
-#' * 'cate'  gives categorical trait values. The values consist of the integers from 1 to `ncats`, which each indicates a category. Each category is drawn with the same probability.
-#' * 'tnorm' gives normally distributed trait values (truncated). The values are drawn from a truncated normal distribution that lie in the interval \[0,1], with mean = 0.5 and standard deviation = 0.25.
-#' * 'ranks' gives trait values indicating ranks (e.g. social rank). The values are equally distributed in the interval \[0,1]. This corresponds to ranks indicated by integers from 1 to `n`, transformed to the interval \[0,1].
-#' * 'unif'  gives uniformly distributed trait values. The values are drawn from a uniform distribution with the interval \[0,1].
-#' * 'own' must be given for any trait where trait values are given as input by the user. For such traits, the class needs to be specified in the `owntraitclasses` argument.
-#'
-#' About `preftypes`:
-#' * There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-#' * 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-#' * 'pop' indicates that individuals with high trait values are preferred (popular).
+#' Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values,
+#' the preference type given for each trait, and the importance (weight) given for each trait-preference combination.
+#' From this, a network is constructed where pairs with higher social attraction have a higher chance of getting a link.
 #'
 #' About `linktype`:
 #' * 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
@@ -57,7 +39,7 @@
 #'
 #' About `owntraitvals`:
 #' * If the user provides trait values for more than one trait, then `owntraitvals` must have one column for each of these traits, and `n` rows.
-#' If the user provides trait values for a single trait then `owntraitvals` can be a vector of length `n` or a matrix with `n` rows and 1 column.
+#' If the user provides trait values for a single trait, then `owntraitvals` can be a vector of length `n` or a matrix with `n` rows and 1 column.
 #' Categorical trait values should consist of integers that each indicates a category.
 #' Continuous trait values should consist of numbers between 0 and 1, and empirical trait values on other scales should be transformed to this scale before being used.
 #' The trait values must fit with the trait classes given in the `owntraitclasses` argument.
@@ -71,7 +53,7 @@
 #' @param k An integer indicating the average degree (average number of links connected to each node)
 #' @param traittypes A vector of strings indicating the trait type for each trait ('cate', 'tnorm', 'ranks', 'unif' or 'own'; see Details)
 #' @param allncats A vector of integers indicating the number of categories for each trait (numbers for non-categorical traits are not used and may be set to NA, but must be included in the vector)
-#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('sim', or 'pop'; see Details)
+#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)
 #' @param linktype A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)
 #' @param wvals A vector with the importance (weight) of each trait-preference combination
 #' @param onecomp Logical. If TRUE then the generated network will have all the nodes in a single component (i.e. at least indirectly connected). If FALSE then the generated network may consist of more than one component
@@ -81,17 +63,17 @@
 #'
 #' @return A plot of the network (only if `visnet` = TRUE) and a list containing the following:
 #' * `net`: the network matrix
-#' * `traitvals`: a matrix with all the trait values (both generated and user-supplied)
+#' * `traitvals`: a matrix with all the trait values
 #' * `sociatvals`: a vector with a social attraction value for each dyad
 
 
 #' @export
 
 #' @references
-#' Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+#' Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 #' \url{https://ecoevorxiv.org/repository/view/9622/}
 #'
-#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 #' \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 #'
 #' Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.
@@ -107,20 +89,19 @@
 #'
 #' @examples
 #'
-#' # A network based on two traits with popularity and similarity preferences,
-#' # respectively (this corresponds to the minimal version of the trait preference
-#' # model, see References):
+#' # A network based on two traits combined a popularity and a similarity preference,
+#' # respectively:
 #'
 #' traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'), allncats = c(5, NA),
-#' preftypes = c('sim', 'pop'), linktype = 'stow', wvals = c(0.5, 0.5),
+#' preftypes = c('simclose', 'pophigh'), linktype = 'stow', wvals = c(0.5, 0.5),
 #' onecomp = TRUE, visnet = TRUE)
 #'
 #'
-#' # The same as the above example, but where the categorical similarity trait is of
-#' # high importance and the other trait (with popularity) of no importance:
+#' # The same as the above example, but where one preference-trait combination is of
+#' # high importance and the other preference-trait combination of no importance:
 #'
 #' traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'), allncats = c(5, NA),
-#' preftypes = c('sim', 'pop'), linktype = 'stow', wvals = c(0.9, 0),
+#' preftypes = c('simclose', 'pophigh'), linktype = 'stow', wvals = c(0.9, 0),
 #' onecomp = TRUE, visnet = TRUE)
 #'
 #'
@@ -132,7 +113,7 @@
 #' linktype <- 'stow'
 #' traittypes <- c('cate', 'tnorm', 'ranks')
 #' allncats <- c(5, NA, NA)
-#' preftypes <- c('sim', 'pop', 'sim')
+#' preftypes <- c('simclose', 'pophigh', 'simfar')
 #' wvals <- c(0.5, 0.1, 0.3)
 #'
 #' traitnetoutput <- traitnet(n=100, k=10, traittypes = traittypes, allncats = allncats,
@@ -151,7 +132,7 @@
 #' linktype <- 'stow'
 #' traittypes <- c('own', 'own')
 #' allncats <- c(NA, 2)
-#' preftypes <- c('pop', 'sim')
+#' preftypes <- c('pophigh', 'simclose')
 #' wvals <- c(0.1, 0.85)
 #' owntraitvals <- cbind(sample(100)/100, sample(1:2,100, replace = T))
 #' owntraitclasses <- c('cont', 'cate')
@@ -167,7 +148,7 @@
 
 
 
-traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, onecomp, visnet, owntraitclasses = NULL, owntraitvals = NULL){
+traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, onecomp, visnet, owntraitclasses = NULL, owntraitvals = NULL, egg = FALSE){
 
   if(length(n)==0 || length(k)==0 || length(traittypes)==0 || length(allncats)==0 || length(preftypes)==0 || length(linktype)==0 || length(wvals)==0 || length(onecomp)==0 || length(visnet)==0) {
     stop("Input without defaults must not be empty")
@@ -206,12 +187,12 @@ traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, one
       stop("Input lengths do not fit.")
     }
   }
-  if (!all(preftypes %in% c('sim','pop')) ) {
+  if (!all(preftypes %in% c('simclose', 'simfar', 'pophigh', 'poplow')) ) {
     stop('preftypes incorrect.')
   }
-  if (any(wvals[traittypes=='cate' & preftypes == 'sim'] >0.99) & onecomp == TRUE){
-    warning(prompt = 'Using sim with wval > 0.99 is not recommended as it may be slow or impossible to generate the network.', immediate. = TRUE)
-  }
+  #if (any(wvals[traittypes=='cate' & preftypes == 'sim'] >0.99) & onecomp == TRUE){
+  #  warning(prompt = 'Using sim with wval > 0.99 is not recommended as it may be slow or impossible to generate the network.', immediate. = TRUE)
+  #}
   if (!is.null(owntraitvals)) {
     owntmat <- as.matrix(owntraitvals)
     owntcate <- owntmat[,owntraitclasses == 'cate']
@@ -260,6 +241,28 @@ traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, one
 
   if (visnet == TRUE){
     traitnetvisual(net = net, traitclasses = traitclasses, preftypes = preftypes, linktype = linktype, wvals = wvals, traitvals = traitvals)
+  }
+
+
+  # POTENTIALLY ADD MATRICIFICATION OF SOCIATVALS HERE AND GIVE SOCIATVALS IN MATRIX FORM A NEW NAME
+
+  # # COPIED FROM NETWORK CONSTRAINTS The same social attraction values in matrix format (we must use the inames and jnames order)
+  # socatmatnoconraw <- matrix(0, n, n)
+  # inamesboth<-c(inames, jnames)
+  # jnamesboth <- c(jnames, inames)
+  # bothboth<- cbind(inamesboth, jnamesboth)
+  # socatmatnoconraw[bothboth]<- socatvec
+  # socatmatnocon <- socatmatnoconraw
+
+
+  if (egg == TRUE){
+    fact <- sample(c('\nHi human! Did you know: the okapi\'s tongue is so long it can clean its eyes and ears with it!\n',
+                     '\nHi human! Did you know: the okapi is dark brown with zebra stripes on its legs!\n',
+                     '\nHi human! Did you know: the okapi is also called the zebra giraffe!\n',
+                     '\nHi human! Did you know: the okapi\'s closest relative is the giraffe!\n',
+                     '\nHi human! Did you know: the okapi is a cool animal that lives seclusively in the rainforest!\n',
+                     '\nHi human! Did you know: the okaapi has scent glands on its feet!\n'), 1)
+    cat(fact)
   }
 
   return(list(net = net, traitvals = traitvals, sociatvals = sociatvals))

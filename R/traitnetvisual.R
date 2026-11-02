@@ -26,9 +26,13 @@
 #' * 'cont' indicates a continuous trait.
 #'
 #' About `preftypes`:
-#' * There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-#' * 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-#' * 'pop' indicates that individuals with high trait values are preferred (popular).
+#' * Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+#' * For similarity preferences, the preference depends on the distance (similarity) between trait values.
+#' * For popularity preferences, the preference depends on the magnitude of the trait values.
+#' * 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
+#' * 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+#' * 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
+#' * 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 #'
 #' About `linktype`:
 #' * 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
@@ -47,7 +51,7 @@
 #'
 #' @param net The network adjacency matrix to be plotted
 #' @param traitclasses A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)
-#' @param preftypes A vector of strings indicating the preference type used with each trait ('sim', or 'pop'; see Details)
+#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)
 #' @param linktype A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)
 #' @param wvals A vector with the importance (weight) of each trait-preference combination
 #' @param traitvals A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait
@@ -56,10 +60,10 @@
 #' @export
 
 #' @references
-#' Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+#' Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 #' \url{https://ecoevorxiv.org/repository/view/9622/}
 #'
-#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 #' \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 #'
 #' Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.
@@ -86,7 +90,7 @@
 #' traittype <- 'cate'
 #' ncats <- 5
 #' traitclasses <- 'cate'
-#' preftypes <- 'sim'
+#' preftypes <- 'simclose'
 #' wvals <- 0.95
 #' linktype <- 'stow'
 #'
@@ -140,7 +144,7 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
   if(any(is.na(traitvals))) {
     stop("traitvals must not contain NA's.")
   }
-  if (!all(preftypes %in% c('sim','pop')) ) {
+  if (!all(preftypes %in% c('simclose', 'simfar','pophigh', 'poplow')) ) {
     stop('preftypes are incorrect.')
   }
   tmat <- as.matrix(traitvals)
@@ -168,8 +172,8 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
   igraph::V(igraphnet)$frame.color <- 'white'
   igraph::V(igraphnet)$label <- NA
 
-  if(any(preftypes == 'pop')){
-    popplaces <- which(preftypes == 'pop')
+  if(any(preftypes %in% c('pophigh', 'poplow'))){
+    popplaces <- which(preftypes %in% c('pophigh', 'poplow'))
     popwvals <- wvals[popplaces]
     maxpopplacecur <- which.max(popwvals)
     maxpopplace <- popplaces[maxpopplacecur]
@@ -186,8 +190,8 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
     popclass <- 'none'
   }
 
-  if(any(preftypes == 'sim')){
-    simplaces <- which(preftypes == 'sim')
+  if(any(preftypes %in% c('simclose', 'simfar'))){
+    simplaces <- which(preftypes %in% c('simclose', 'simfar'))
     simwvals <- wvals[simplaces]
     maxsimplacecur <- which.max(simwvals)
     maxsimplace <- simplaces[maxsimplacecur]
@@ -207,7 +211,19 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
     igraph::V(igraphnet)$color <- '#b30000'
   }
 
-  traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale)
+ traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale)
+
+
+ # REMOVE, USED TO CHECK NEW FEATURES
+
+ #igraph::V(igraphnet)$size <- 3
+ #ordered_vertices <- order(V(igraphnet)$color)
+ #layout <- layout_in_circle(igraphnet, order = ordered_vertices)
+ #traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale, layout =layout)
+ #print(assortativity_nominal(igraphnet, tsim, directed = FALSE))
+ #print(assortativity(igraphnet, tsim, directed = FALSE))
+
+
   return(traitnetplot)
 
 }

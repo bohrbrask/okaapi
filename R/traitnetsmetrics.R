@@ -22,9 +22,13 @@
 #' * 'own' must be given for any trait where trait values are given as input by the user. For such traits, the class needs to be specified in the `owntraitclasses` argument.
 #'
 #' About `preftypes`:
-#' * There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-#' * 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-#' * 'pop' indicates that individuals with high trait values are preferred (popular).
+#' * Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+#' * For similarity preferences, the preference depends on the distance (similarity) between trait values.
+#' * For popularity preferences, the preference depends on the magnitude of the trait values.
+#' * 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
+#' * 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+#' * 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
+#' * 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 #'
 #' About `linktype`:
 #' * 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
@@ -51,21 +55,21 @@
 #'
 #' About `metrics`:
 #'
-#' * 'clust' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
-#' * 'clustw' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
+#' * 'clustering' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
+#' * 'w. clustering' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
 #'
-#' * 'path' gives the average path length, i.e. the average unweighted distance between nodes.
-#' * 'pathw' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
+#' * 'average path length' gives the average path length, i.e. the average unweighted distance between nodes.
+#' * 'average w. path length' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
 #'    - For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
 #'
-#' * 'avdeg' gives the average degree.
-#' * 'avdegw' gives the average weighted degree (also called strength).
+#' * 'average degree' gives the average degree.
+#' * 'average w. degree' gives the average weighted degree (also called strength).
 #'
-#' * 'degassort' gives the degree assortativity.
-#' * 'degassortw' gives the weighted degree assortativity.
+#' * 'degree assortativity' gives the degree assortativity.
+#' * 'w. degree assortativity' gives the weighted degree assortativity.
 #'
-#' * 'degvar' gives the degree variation (variance).
-#' * 'degvarw' gives the weighted degree variation (variance).
+#' * 'degree variation' gives the degree variation (variance).
+#' * 'w. degree variation' gives the weighted degree variation (variance).
 
 #'
 #'
@@ -73,7 +77,7 @@
 #' @param k An integer indicating the average degree (average number of links connected to each node)
 #' @param traittypes A vector of strings indicating the trait type for each trait ('cate', 'tnorm', 'ranks', 'unif' or 'own'; see Details)
 #' @param allncats A vector of integers indicating the number of categories for each trait (numbers for non-categorical traits are not used and may be set to NA, but must be included in the vector)
-#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('sim', or 'pop'; see Details)
+#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)
 #' @param linktype A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)
 #' @param wvals  A vector with the importance (weight) of each trait-preference combination
 #' @param onecomp Logical. If TRUE then only networks where all the nodes are in a single component (i.e. at least indirectly connected) are used. If FALSE then the networks may consist of more than one component
@@ -87,10 +91,10 @@
 #' @export
 
 #' @references
-#' Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+#' Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 #' \url{https://ecoevorxiv.org/repository/view/9622/}
 #'
-#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 #' \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 #'
 #' Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.
@@ -109,17 +113,17 @@
 #' # An example where all arguments are defined directly in the call:
 #'
 #' traitnetsmetrics(n=100, k=10, traittypes = c('cate', 'tnorm'),
-#' allncats = c(5, NA), preftypes = c('sim', 'pop'), linktype = 'stow',
+#' allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), linktype = 'stow',
 #' wvals = c(0.9, 0.1), onecomp = TRUE, nrepls = 10,
-#' metrics = c('clust', 'path', 'avdeg'))
+#' metrics = c('clustering', 'average path length', 'average degree'))
 #'
 #'
 #' # An example where some arguments are defined before the call,
 #' # and the metric measurements are stored:
 #'
-#' metrics <- c('pathw', 'clustw', 'degassort', 'degvar')
+#' metrics <- c('average w. path length', 'w. clustering', 'degree assortativity', 'degree variation')
 #' traittypes <- c('tnorm', 'cate', 'ranks')
-#' preftypes <- c('sim', 'sim', 'pop')
+#' preftypes <- c('simfar', 'simclose', 'pophigh')
 #' allncats <- c(5, 2, NA)
 #' wvals <- c(0.5, 0.2, 0.2)
 #' metricresults <- traitnetsmetrics(n=100, k=10, traittypes = traittypes,
@@ -158,7 +162,7 @@ traitnetsmetrics <-  function(n, k, traittypes, allncats, preftypes, linktype, w
   if (!(linktype %in% c('stow','detw','unw')) ) {
     stop('linktype is incorrect.')
   }
-  if (!all(preftypes %in% c('sim','pop')) ) {
+  if (!all(preftypes %in% c('simclose', 'simfar','pophigh', 'poplow')) ) {
     stop('preftypes are incorrect.')
   }
   if (!all(traittypes %in% c('cate','tnorm','ranks', 'unif', 'own')) ) {
@@ -176,7 +180,7 @@ traitnetsmetrics <-  function(n, k, traittypes, allncats, preftypes, linktype, w
       stop("Input lengths do not fit.")
     }
   }
-  if (!all(metrics %in% c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw', 'degassort', 'degassortw', 'degvar', 'degvarw')) ) {
+  if (!all(metrics %in% c('clustering', 'w. clustering', 'average path length', 'average w. path length', 'average degree', 'average w. degree', 'degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')) ) {
     stop('metrics is incorrect.')
   }
   if (!is.null(owntraitvals)) {

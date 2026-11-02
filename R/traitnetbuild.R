@@ -32,10 +32,10 @@
 #' @export
 #'
 #'@references
-#' Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+#' Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 #' \url{https://ecoevorxiv.org/repository/view/9622/}
 #'
-#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 #' \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 #'
 #' Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.

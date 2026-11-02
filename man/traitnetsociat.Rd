@@ -16,7 +16,7 @@ traitnetsociat(traitclasses, preftypes, wvals, traitvals)
 \item{traitvals}{A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait}
 }
 \value{
-A vector of social attraction values (one value for each pair of individuals).
+A vector of social attraction values (one value for each pair of individuals). The values are ordered in the following way (with integers indicating names of individuals): 1&2, 1&3, ..., 1&n, 2&3, 2&4, ..., 2&n, ... n-1 and n.
 }
 \description{
 \code{traitnetsociat()} calculates social attraction values between individuals, based on social preferences for traits (attributes).

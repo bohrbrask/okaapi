@@ -10,8 +10,8 @@
 #'
 #'
 #' The `traitnetsociat()` function calculates the social attraction for each pair of individuals, based on the two individuals'
-#' trait values (attributes), and the preference type and importance (weight) set for each trait (such that traits with higher weight have more influence on the social attraction).
-#' The calculation follows the preference model (see References).
+#' trait values (attributes), the preference type set for each trait, and importance (weight) set for each preference-trait combination.
+#' The calculation follows the trait preference model (see References).
 #'
 #' To construct networks based on the trait preference model, it is recommended to use the `traitnet()` and `traitnetsmetrics()` functions.
 #' Those functions call this one, and there is thus no need to use this one directly.
@@ -26,9 +26,13 @@
 #' * 'cont' indicates a continuous trait.
 #'
 #' About `preftypes`:
-#' * There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-#' * 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-#' * 'pop' indicates that individuals with high trait values are preferred (popular).
+#' * Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+#' * For similarity preferences, the preference depends on the distance (similarity) between trait values.
+#' * For popularity preferences, the preference depends on the magnitude of the trait values.
+#' * 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
+#' * 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+#' * 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
+#' * 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 #'
 #' About `wvals`:
 #' * The sum of the `wval` vector, and each value in the vector, must lie in the interval \[0,1], where 0 indicates no importance and 1 indicates full importance.
@@ -42,18 +46,18 @@
 #'
 #'
 #' @param traitclasses A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)
-#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('sim', or 'pop'; see Details)
+#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)
 #' @param wvals A vector with the importance (weight) of each trait-preference combination
 #' @param traitvals A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait
 #'
-#' @return A vector of social attraction values (one value for each pair of individuals).
+#' @return A vector of social attraction values (one value for each pair of individuals). The values are ordered in the following way (with integers indicating names of individuals): 1&2, 1&3, ..., 1&n, 2&3, 2&4, ..., 2&n, ... n-1 and n.
 #' @export
 
 #' @references
-#' Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+#' Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 #' \url{https://ecoevorxiv.org/repository/view/9622/}
 #'
-#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+#' Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 #' \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 #'
 #' Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.
@@ -83,7 +87,7 @@
 #' # Set the class, preference type and importance for each trait
 #' (The trait classes must fit with the trait values):
 #' traitclasses <- c('cate', 'cont', 'cont')
-#' preftypes <- c('sim', 'pop', 'sim')
+#' preftypes <- c('simclose', 'pophigh', 'simfar')
 #' wvals <- c(0.7, 0.1, 0.1)
 #'
 #' # Generate the social attraction values:
@@ -113,7 +117,7 @@ traitnetsociat <- function(traitclasses, preftypes, wvals, traitvals){
   if(any(inputlengths != length(traitclasses))) {
     stop("Inputs must have the same lengths.")
   }
-  if (!all(preftypes %in% c('sim','pop')) ) {
+  if (!all(preftypes %in% c('simclose', 'simfar','pophigh', 'poplow')) ) {
     stop('preftypes are incorrect.')
   }
   if(any(is.na(traitvals))) {
@@ -130,20 +134,33 @@ traitnetsociat <- function(traitclasses, preftypes, wvals, traitvals){
     stop('Continuous trait values must be in the range from 0 to 1.')
   }
 
-  simprefs <- function(simtype, tsim){
+  simcloseprefs <- function(simtype, tsim){
     n <- length(tsim)
     inames <- rep(1:(n-1),(n-1):1)
     jnames <- sequence((n-1):1, from = 2:n)
     tsimalli <- tsim[inames]
     tsimallj <- tsim[jnames]
     if (simtype == 'cate') {
-      psim  <- ifelse(tsimalli-tsimallj ==0, 1,0)
+      psimclose  <- ifelse(tsimalli-tsimallj ==0, 1,0)
     } else if (simtype == 'cont'){
-      psim <- 1 - abs(tsimalli-tsimallj)
+      psimclose <- 1 - abs(tsimalli-tsimallj)
     }
   }
 
-  popprefs <- function(poptype, tpop){
+  simfarprefs <- function(simtype, tsim){
+    n <- length(tsim)
+    inames <- rep(1:(n-1),(n-1):1)
+    jnames <- sequence((n-1):1, from = 2:n)
+    tsimalli <- tsim[inames]
+    tsimallj <- tsim[jnames]
+    if (simtype == 'cate') {
+      psimfar  <- ifelse(tsimalli-tsimallj ==0, 0,1)
+    } else if (simtype == 'cont'){
+      psimfar <- abs(tsimalli-tsimallj)
+    }
+  }
+
+  pophighprefs <- function(poptype, tpop){
     n <- length(tpop)
     inames <- rep(1:(n-1),(n-1):1)
     jnames <- sequence((n-1):1, from = 2:n)
@@ -152,29 +169,57 @@ traitnetsociat <- function(traitclasses, preftypes, wvals, traitvals){
     if (poptype == 'cate') {
       npopcats <- length(unique(tpop))
       popcatvals <- seq(0,1,length.out = npopcats)
-      ppop <- (popcatvals[tpopalli]+popcatvals[tpopallj])/2
+      ppophigh <- (popcatvals[tpopalli]+popcatvals[tpopallj])/2
     } else if (poptype == 'cont'){
-      ppop <- (tpopalli+tpopallj)/2
+      ppophigh <- (tpopalli+tpopallj)/2
     }
   }
 
-  traitvals <- as.matrix(traitvals)
-  n <- nrow(traitvals)
-  ndyads <- (n*n-n)/2
-  ptraits <- matrix(NA, nrow = ndyads, ncol = length(traitclasses))
-  for (traitnum in seq_along(traitclasses)) {
-    if (preftypes[traitnum]=='sim'){
-      ptraits[,traitnum] <- simprefs(simtype = traitclasses[traitnum], tsim = traitvals[,traitnum])
-    } else if (preftypes[traitnum]=='pop'){
-      ptraits[,traitnum] <- popprefs(poptype = traitclasses[traitnum], tpop = traitvals[,traitnum])
+
+  poplowprefs <- function(poptype, tpop){
+    n <- length(tpop)
+    inames <- rep(1:(n-1),(n-1):1)
+    jnames <- sequence((n-1):1, from = 2:n)
+    tpopalli <- tpop[inames]
+    tpopallj <- tpop[jnames]
+    if (poptype == 'cate') {
+      npopcats <- length(unique(tpop))
+      popcatvals <- seq(0,1,length.out = npopcats)
+      ppoplow <- (2-(popcatvals[tpopalli]+popcatvals[tpopallj]))/2
+    } else if (poptype == 'cont'){
+      ppoplow <- (2-(tpopalli+tpopallj))/2
     }
   }
-  prand <- runif(ndyads)
-  wrand <- 1-sum(wvals)
-  ptws <- t(t(ptraits)*wvals)
-  prandtws <- wrand*prand
-  ptwsums <- rowSums(ptws)
-  sociatvals <- ptwsums+prandtws
+
+  # Linking probabilities for each dyad for each trait
+
+  traitvals <- as.matrix(traitvals)                                                                  # All the trait values in matrix format
+  n <- nrow(traitvals)                                                                               # number of individuals
+  ndyads <- (n*n-n)/2                                                                                # number of dyads
+  ptraits <- matrix(NA, nrow = ndyads, ncol = length(traitclasses))                                  #
+  for (traitnum in seq_along(traitclasses)) {                                                        # for each trait
+    if (preftypes[traitnum]=='simclose'){                                                                 # if the trait is of traittype 'simclose'
+      ptraits[,traitnum] <- simcloseprefs(simtype = traitclasses[traitnum], tsim = traitvals[,traitnum])  # calculate linking probabilities (note: not yet weighted by importance) for the trait with the simcloseprefs functon
+    } else if (preftypes[traitnum]=='simfar'){                                                                 # if the trait is of traittype 'simfar'
+        ptraits[,traitnum] <- simfarprefs(simtype = traitclasses[traitnum], tsim = traitvals[,traitnum])  # calculate linking probabilities (note: not yet weighted by importance) for the trait with the simfarprefs functon
+    } else if (preftypes[traitnum]=='pophigh'){                                                          # if the trait is of traittype 'pophigh'
+      ptraits[,traitnum] <- pophighprefs(poptype = traitclasses[traitnum], tpop = traitvals[,traitnum])  # calculate linking probabilities for the trait with the pophighprefs functon
+    } else if (preftypes[traitnum]=='poplow'){                                                          # if the trait is of traittype 'poplow'
+      ptraits[,traitnum] <- poplowprefs(poptype = traitclasses[traitnum], tpop = traitvals[,traitnum])  # calculate linking probabilities (social attractions?) for the trait with the poplowprefs functon
+      }
+  }
+
+  # Weigh the trait linking probabilities by importance
+  ptws <- t(t(ptraits)*wvals)     # IS THIS THE SAME ORDER OF DYADS AS ABOVE trait linking probabilities weighted by importances
+
+  # Calculate linking probabilities for randomness weighted by importance
+  prand <- runif(ndyads)          # random number for each dyad
+  wrand <- 1-sum(wvals)           # importance w of randomness
+  prandtws <- wrand*prand         # random probability weighted by importance
+
+  # Calculate final social attractions
+  ptwsums <- rowSums(ptws)        # weighted trait linking probabilities summed for each dyad
+  sociatvals <- ptwsums+prandtws  # social attraction values for each dyad (the above with random prob added)
 
   return(sociatvals)
 

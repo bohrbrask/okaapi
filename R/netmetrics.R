@@ -13,21 +13,21 @@
 #'
 #' About `metrics`:
 #'
-#' * 'clust' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
-#' * 'clustw' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
+#' * 'clustering' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
+#' * 'w. clustering' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
 #'
-#' * 'path' gives the average path length, i.e. the average unweighted distance between nodes.
-#' * 'pathw' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
+#' * 'average path length' gives the average path length, i.e. the average unweighted distance between nodes.
+#' * 'average w. path length' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
 #'   - For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
 #'
-#' * 'avdeg' gives the average degree.
-#' * 'avdegw' gives the average weighted degree (also called strength).
+#' * 'average degree' gives the average degree.
+#' * 'average w. degree' gives the average weighted degree (also called strength).
 #'
-#' * 'degassort' gives the degree assortativity.
-#' * 'degassortw' gives the weighted degree assortativity.
+#' * degree assortativity' gives the degree assortativity.
+#' * 'w. degree assortativity' gives the weighted degree assortativity.
 #'
-#' * 'degvar' gives the degree variation (variance).
-#' * 'degvarw' gives the weighted degree variation (variance).
+#' * 'degree variation' gives the degree variation (variance).
+#' * 'w. degree variation' gives the weighted degree variation (variance).
 #'
 #'
 #' @param net A network (adjacency matrix)
@@ -52,13 +52,13 @@
 #' # An example that uses a network created with the traitnet function:
 #'
 #' traitnetoutput <- traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'),
-#' allncats = c(5, NA), preftypes = c('sim', 'pop'), linktype = 'stow',
+#' allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), linktype = 'stow',
 #' wvals = c(0.8, 0.1), onecomp = TRUE, visnet = TRUE)
 #'
 #' net <- traitnetoutput$net
 #'
-#' metrics <- c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw',
-#' 'degassort', 'degassortw', 'degvar', 'degvarw')
+#' metrics <- c('clustering', 'w. clustering', 'average path length', 'average w. path length', 'average degree', 'average w. degree',
+#' degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')
 #'
 #' netmetrics(net, metrics)
 #'
@@ -77,7 +77,7 @@
 #' type = 'both', names = FALSE, sparse = FALSE)
 #'
 #' # Calculate clustering and path length for the two networks
-#' metrics <- c('clust', 'path')
+#' metrics <- c('clustering', 'average path length')
 #' randnetmetrics <- netmetrics(randnet, metrics)
 #' scalenetmetrics <- netmetrics(scalenet, metrics)
 
@@ -103,7 +103,7 @@ netmetrics <- function(net, metrics){
   if(any(is.na(net))) {
     stop("The input network must not contain NA's.")
   }
-  if (!all(metrics %in% c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw', 'degassort', 'degassortw', 'degvar', 'degvarw')) ) {
+  if (!all(metrics %in% c('clustering', 'w. clustering', 'average path length', 'average w. path length', 'average degree', 'average w. degree', 'degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')) ) {
     stop('metrics is incorrect.')
   }
 
@@ -113,44 +113,44 @@ netmetrics <- function(net, metrics){
   degs <- colSums(net>0)
   weidegs <- colSums(net)
 
-  if ('clust' %in% metrics){
-    metricvals['clust'] <- igraph::transitivity(netigraph, type= "global") # calculate and store unweighted transitivity (global clustering = ratio of triangles and connected triples)
+  if ('clustering' %in% metrics){
+    metricvals['clustering'] <- igraph::transitivity(netigraph, type= "global") # calculate and store unweighted transitivity (global clustering = ratio of triangles and connected triples)
   }
-  if ('clustw' %in% metrics){
+  if ('w. clustering' %in% metrics){
     transes <- igraph::transitivity(netigraph, type= "weighted")
     transesnonan <- transes
     transesnonan[transesnonan =='NaN'] <- 0 #we set NaN values to zero (individuals with only one link get NaN but we give them zero instead)
-    metricvals['clustw'] <- mean(transesnonan)     # weighted clustering
+    metricvals['w. clustering'] <- mean(transesnonan)     # weighted clustering
   }
-  if ('path' %in% metrics){
-    metricvals['path'] <- igraph::mean_distance(netigraph, directed = FALSE, weights = NA) # calculate unweighted mean distance (average path length)
+  if ('average path length' %in% metrics){
+    metricvals['average path length'] <- igraph::mean_distance(netigraph, directed = FALSE, weights = NA) # calculate unweighted mean distance (average path length)
   }
-  if ('pathw' %in% metrics){
+  if ('average w. path length' %in% metrics){
     nonzeroweights <- net[net>0] # get nonzero links
     invnonzeroweights <- 1/nonzeroweights # get the inverse of the nonzero edge weights
     nonzeroplaces <- which(net>0) # find places of nonzero links
     invnet <- net
     invnet[nonzeroplaces] <- invnonzeroweights #insert the inverted link strengths in place of the originals
     invnetigraph <- igraph::graph_from_adjacency_matrix(invnet, mode = "undirected", diag = FALSE, weighted = TRUE)
-    metricvals['pathw'] <- igraph::mean_distance(invnetigraph, directed = F)
+    metricvals['average w. path length'] <- igraph::mean_distance(invnetigraph, directed = F)
   }
-  if ('avdeg' %in% metrics){
-    metricvals['avdeg'] <- mean(degs) # calculate mean degree (unweighted)
+  if ('average degree' %in% metrics){
+    metricvals['average degree'] <- mean(degs) # calculate mean degree (unweighted)
   }
-  if ('avdegw' %in% metrics){
-    metricvals['avdegw'] <- mean(weidegs) # calculate mean weighted degree
+  if ('average w. degree' %in% metrics){
+    metricvals['average w. degree'] <- mean(weidegs) # calculate mean weighted degree
   }
-  if ('degassort' %in% metrics){
-    metricvals['degassort'] <- igraph::assortativity_degree(netigraph, directed = F)# calculate degree assortativity
+  if ('degree assortativity' %in% metrics){
+    metricvals['degree assortativity'] <- igraph::assortativity_degree(netigraph, directed = F)# calculate degree assortativity
   }
-  if ('degassortw' %in% metrics){
-    metricvals['degassortw'] <- igraph::assortativity(netigraph, weidegs, directed = F)# calculate weighted degree assortativity
+  if ('w. degree assortativity' %in% metrics){
+    metricvals['w. degree assortativity'] <- igraph::assortativity(netigraph, weidegs, directed = F)# calculate weighted degree assortativity
   }
-  if ('degvar' %in% metrics){
-    metricvals['degvar'] <- var(degs)   # calculate degree variation
+  if ('degree variation' %in% metrics){
+    metricvals['degree variation'] <- var(degs)   # calculate degree variation
   }
-  if ('degvarw' %in% metrics){
-    metricvals['degvarw'] <- var(weidegs)   # calculate weighted degree variation
+  if ('w. degree variation' %in% metrics){
+    metricvals['w. degree variation'] <- var(weidegs)   # calculate weighted degree variation
   }
 
   return(metricvals)
