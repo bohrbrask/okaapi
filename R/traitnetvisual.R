@@ -108,7 +108,7 @@
 
 
 
-traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitvals) {
+traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitvals, vistraitnum = NULL) {
 
   if(any(is.na(net))) {
     stop("The input network must not contain NA's.")
@@ -158,6 +158,14 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
     stop('Continuous trait values must be in the range from 0 to 1.')
   }
 
+
+
+  # if vistraitnum not lenght 2 stop
+  # if vistraitnum not integers stop
+  # if vistraitnum higher than number of traits stop
+
+
+
   n <- nrow(net)
   traitvals <- as.matrix(traitvals)
   slope <- -0.01
@@ -172,23 +180,102 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
   igraph::V(igraphnet)$frame.color <- 'white'
   igraph::V(igraphnet)$label <- NA
 
+
+
+
+
+
+
+  # function to set nodesizes
+
+  # getnodesizes <- function(sizeplace, traitclasses, traitvals, nodesizescale){
+  #   sizetraitclass <- traitclasses[sizeplace]
+  # sizetraitvals <- traitvals[,sizeplace]
+  # if (sizetraitclass == 'cate') {
+  #   nodesizes <- nodesizescale*sizetraitvals/max(sizetraitvals)
+  # } else if (sizeclass =='cont') {
+  #   nodesizes <- nodesizescale*sizetraitvals+3
+  # }
+  # return(nodesizes)
+  # }
+
+
+  # function to set nodecolours
+
+#   getnodecolours <- function(coloplace){
+#   coloclass <- traitclasses[coloplace]
+#   tcolo <- traitvals[,coloplace]
+#   if (coloclass == 'cate') {
+#     nodecolours <- tcolo
+#     ncolocats <- length(unique(tcolo))
+#     igraphnet$palette <- igraph::sequential_pal(ncolocats)
+#   } else {
+#     reddishcols = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000')
+#     if (coloclass == 'cont') {
+#       nodecolours <- contincols(cols = reddishcols, colvals = tcolo)
+#     }
+#   }
+#   return(nodecolours)
+# }
+
+
+
+
+
+
+  # SETTING NODE SIZES AND COLOURS
+
+
+  if (!is.null(vistraitnum)) {
+
+    if (!is.na(vistraitnum[1])) {
+
+    sizeplace <- vistraitnum[1]
+    sizetraitclass <- traitclasses[sizeplace]
+    sizetraitvals <- traitvals[,sizeplace]
+    if (sizetraitclass == 'cate') {
+      igraph::V(igraphnet)$size <- nodesizescale*sizetraitvals/max(sizetraitvals)
+    } else if (sizetraitclass =='cont') {
+      igraph::V(igraphnet)$size <- nodesizescale*sizetraitvals+3
+    }
+    }
+
+    if (!is.na(vistraitnum[2])) {
+    coloplace <- vistraitnum[2]
+    coloclass <- traitclasses[coloplace]
+    tcolo <- traitvals[,coloplace]
+    if (coloclass == 'cate') {
+      igraph::V(igraphnet)$color <- tcolo
+      ncolocats <- length(unique(tcolo))
+      igraphnet$palette <- igraph::sequential_pal(ncolocats)
+    } else if (coloclass == 'cont') {
+      reddishcols = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000')
+      igraph::V(igraphnet)$color <- contincols(cols = reddishcols, colvals = tcolo)
+    }
+  } else {
+    igraph::V(igraphnet)$color <- '#b30000'
+  }
+
+
+
+
+
+  } else if (is.null(vistraitnum)) {
+
   if(any(preftypes %in% c('pophigh', 'poplow'))){
     popplaces <- which(preftypes %in% c('pophigh', 'poplow'))
     popwvals <- wvals[popplaces]
     maxpopplacecur <- which.max(popwvals)
     maxpopplace <- popplaces[maxpopplacecur]
-    popclass <- traitclasses[maxpopplace]
-    tpop <- traitvals[,maxpopplace]
-    wpop <- wvals[maxpopplace]
-    if (popclass == 'cate') {
-      igraph::V(igraphnet)$size <- nodesizescale*tpop/max(tpop)
-    } else if (popclass =='cont') {
-      igraph::V(igraphnet)$size <- nodesizescale*tpop +3
-    }
-  } else {
-    wpop <- 'none'
-    popclass <- 'none'
-  }
+  popclass <- traitclasses[maxpopplace]
+   tpop <- traitvals[,maxpopplace]
+   if (popclass == 'cate') {
+     igraph::V(igraphnet)$size <- nodesizescale*tpop/max(tpop)
+   } else if (popclass =='cont') {
+     igraph::V(igraphnet)$size <- nodesizescale*tpop +3
+ }
+ }
+
 
   if(any(preftypes %in% c('simclose', 'simfar'))){
     simplaces <- which(preftypes %in% c('simclose', 'simfar'))
@@ -197,19 +284,22 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
     maxsimplace <- simplaces[maxsimplacecur]
     simclass <- traitclasses[maxsimplace]
     tsim <- traitvals[,maxsimplace]
+
     if (simclass == 'cate') {
       igraph::V(igraphnet)$color <- tsim
       nsimcats <- length(unique(tsim))
       igraphnet$palette <- igraph::sequential_pal(nsimcats)
-    } else {
+    } else if (simclass == 'cont') {
       reddishcols = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000')
-      if (simclass == 'cont') {
-        igraph::V(igraphnet)$color <- contincols(cols = reddishcols, colvals = tsim)
-      }
+      igraph::V(igraphnet)$color <- contincols(cols = reddishcols, colvals = tsim)
     }
   } else {
     igraph::V(igraphnet)$color <- '#b30000'
   }
+
+
+  }
+
 
  traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale)
 

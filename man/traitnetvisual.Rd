@@ -4,14 +4,22 @@
 \alias{traitnetvisual}
 \title{Plot a trait preference network}
 \usage{
-traitnetvisual(net, traitclasses, preftypes, linktype, wvals, traitvals)
+traitnetvisual(
+  net,
+  traitclasses,
+  preftypes,
+  linktype,
+  wvals,
+  traitvals,
+  vistraitnum = NULL
+)
 }
 \arguments{
 \item{net}{The network adjacency matrix to be plotted}
 
 \item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)}
 
-\item{preftypes}{A vector of strings indicating the preference type used with each trait ('sim', or 'pop'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
 
 \item{linktype}{A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)}
 
@@ -50,9 +58,13 @@ About \code{traitclasses}:
 
 About \code{preftypes}:
 \itemize{
-\item There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-\item 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-\item 'pop' indicates that individuals with high trait values are preferred (popular).
+\item Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+\item For similarity preferences, the preference depends on the distance (similarity) between trait values.
+\item For popularity preferences, the preference depends on the magnitude of the trait values.
+\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
+\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+\item 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
+\item 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 }
 
 About \code{linktype}:
@@ -88,7 +100,7 @@ k <- 10
 traittype <- 'cate'
 ncats <- 5
 traitclasses <- 'cate'
-preftypes <- 'sim'
+preftypes <- 'simclose'
 wvals <- 0.95
 linktype <- 'stow'
 
@@ -101,10 +113,10 @@ net <- traitnetbuild(n, k, linktype, sociatvals)
 traitnetvisual(net, traitclasses, preftypes, linktype, wvals, traitvals)
 }
 \references{
-Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 \url{https://ecoevorxiv.org/repository/view/9622/}
 
-Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 
 Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.

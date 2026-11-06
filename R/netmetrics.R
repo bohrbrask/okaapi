@@ -58,7 +58,7 @@
 #' net <- traitnetoutput$net
 #'
 #' metrics <- c('clustering', 'w. clustering', 'average path length', 'average w. path length', 'average degree', 'average w. degree',
-#' degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')
+#' 'degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')
 #'
 #' netmetrics(net, metrics)
 #'

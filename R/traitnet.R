@@ -148,7 +148,7 @@
 
 
 
-traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, onecomp, visnet, owntraitclasses = NULL, owntraitvals = NULL, egg = FALSE){
+traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, onecomp, visnet, vistraitnum = NULL, owntraitclasses = NULL, owntraitvals = NULL, egg = FALSE){
 
   if(length(n)==0 || length(k)==0 || length(traittypes)==0 || length(allncats)==0 || length(preftypes)==0 || length(linktype)==0 || length(wvals)==0 || length(onecomp)==0 || length(visnet)==0) {
     stop("Input without defaults must not be empty")
@@ -240,7 +240,7 @@ traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, one
   }
 
   if (visnet == TRUE){
-    traitnetvisual(net = net, traitclasses = traitclasses, preftypes = preftypes, linktype = linktype, wvals = wvals, traitvals = traitvals)
+    traitnetvisual(net = net, traitclasses = traitclasses, preftypes = preftypes, linktype = linktype, wvals = wvals, traitvals = traitvals, vistraitnum = vistraitnum)
   }
 
 
@@ -256,13 +256,14 @@ traitnet <- function(n, k, traittypes, allncats, preftypes, linktype, wvals, one
 
 
   if (egg == TRUE){
-    fact <- sample(c('\nHi human! Did you know: the okapi\'s tongue is so long it can clean its eyes and ears with it!\n',
-                     '\nHi human! Did you know: the okapi is dark brown with zebra stripes on its legs!\n',
-                     '\nHi human! Did you know: the okapi is also called the zebra giraffe!\n',
-                     '\nHi human! Did you know: the okapi\'s closest relative is the giraffe!\n',
-                     '\nHi human! Did you know: the okapi is a cool animal that lives seclusively in the rainforest!\n',
-                     '\nHi human! Did you know: the okaapi has scent glands on its feet!\n'), 1)
-    cat(fact)
+    egg()
+    # fact <- sample(c('\nHi human! Did you know: the okapi\'s tongue is so long it can clean its eyes and ears with it!\n',
+    #                  '\nHi human! Did you know: the okapi is dark brown with zebra stripes on its legs!\n',
+    #                  '\nHi human! Did you know: the okapi is also called the zebra giraffe!\n',
+    #                  '\nHi human! Did you know: the okapi\'s closest relative is the giraffe!\n',
+    #                  '\nHi human! Did you know: the okapi is a cool animal that lives seclusively in the rainforest!\n',
+    #                  '\nHi human! Did you know: the okapi has scent glands on its feet!\n'), 1)
+    # cat(fact)
   }
 
   return(list(net = net, traitvals = traitvals, sociatvals = sociatvals))

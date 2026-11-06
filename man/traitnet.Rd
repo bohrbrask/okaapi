@@ -14,8 +14,10 @@ traitnet(
   wvals,
   onecomp,
   visnet,
+  vistraitnum = NULL,
   owntraitclasses = NULL,
-  owntraitvals = NULL
+  owntraitvals = NULL,
+  egg = FALSE
 )
 }
 \arguments{
@@ -27,7 +29,7 @@ traitnet(
 
 \item{allncats}{A vector of integers indicating the number of categories for each trait (numbers for non-categorical traits are not used and may be set to NA, but must be included in the vector)}
 
-\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('sim', or 'pop'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
 
 \item{linktype}{A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)}
 
@@ -45,7 +47,7 @@ traitnet(
 A plot of the network (only if \code{visnet} = TRUE) and a list containing the following:
 \itemize{
 \item \code{net}: the network matrix
-\item \code{traitvals}: a matrix with all the trait values (both generated and user-supplied)
+\item \code{traitvals}: a matrix with all the trait values
 \item \code{sociatvals}: a vector with a social attraction value for each dyad
 }
 }
@@ -57,42 +59,21 @@ This function can be considered both as a tool to generate networks based on soc
 And as a tool to generate networks with specific structural properties (potentially disregarding the preference interpretation).
 
 The function can create networks going from randomly structured to strongly influenced by trait preferences.
-One or more traits, and different types of social preferences, can influence the network structure.
+One or more traits, and different types of trait preferences, can influence the network structure.
 The trait values of individuals can be simulated (based on different trait types), or given as input by the user.
-The traits (and thereby also the preference types) can vary in their importance (their influence on the structure).
+The traits (and thereby also the preference types) can vary in their importance.
 
-Network structures that can be generated include random, modular, assorted (with or without modularity), centralized, and mixes of these in any ratio.
+Global structural patterns that can be generated include random, modular, assorted (with or without modularity), disassorted, centralized, and mixes of these in any ratio.
 \itemize{
 \item Popularity preferences give centralization.
-\item Similarity preferences with categorical traits give modularity and trait assortativity.
-\item Similarity preferences with continuous traits give assortativity (without modularity).
+\item Similarity preferences with categorical traits give modularity and trait (dis)assortativity.
+\item Similarity preferences with continuous traits give (dis)assortativity (without modularity).
 }
 
 For details about how the trait preference model generates networks, see references below.
-Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values
-and the social preference type and importance (weight) given for each trait. From this, a network is constructed where pairs
-with higher social attraction have a higher chance of getting a link.
-
-The \code{traittypes}, \code{allncats}, \code{preftypes}, and \code{wvals} arguments must fit together in terms of order (and have the same length),
-because the function assumes that the entries in the same place in these vectors fit together.
-For example, the first trait type in the \code{traittypes} vector will be used with the first preference type in the \code{preftypes} vector,
-the first importance value in the \code{wvals} vector, and the first category number (which may be NA) in the \code{allncats} vector.
-
-About \code{traittypes}:
-\itemize{
-\item 'cate'  gives categorical trait values. The values consist of the integers from 1 to \code{ncats}, which each indicates a category. Each category is drawn with the same probability.
-\item 'tnorm' gives normally distributed trait values (truncated). The values are drawn from a truncated normal distribution that lie in the interval [0,1], with mean = 0.5 and standard deviation = 0.25.
-\item 'ranks' gives trait values indicating ranks (e.g. social rank). The values are equally distributed in the interval [0,1]. This corresponds to ranks indicated by integers from 1 to \code{n}, transformed to the interval [0,1].
-\item 'unif'  gives uniformly distributed trait values. The values are drawn from a uniform distribution with the interval [0,1].
-\item 'own' must be given for any trait where trait values are given as input by the user. For such traits, the class needs to be specified in the \code{owntraitclasses} argument.
-}
-
-About \code{preftypes}:
-\itemize{
-\item There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-\item 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-\item 'pop' indicates that individuals with high trait values are preferred (popular).
-}
+Briefly, the model calculates a social attraction value for each pair of individuals, based on their trait values,
+the preference type given for each trait, and the importance (weight) given for each trait-preference combination.
+From this, a network is constructed where pairs with higher social attraction have a higher chance of getting a link.
 
 About \code{linktype}:
 \itemize{
@@ -120,7 +101,7 @@ About \code{owntraitvals} and \code{owntraitclasses}:
 About \code{owntraitvals}:
 \itemize{
 \item If the user provides trait values for more than one trait, then \code{owntraitvals} must have one column for each of these traits, and \code{n} rows.
-If the user provides trait values for a single trait then \code{owntraitvals} can be a vector of length \code{n} or a matrix with \code{n} rows and 1 column.
+If the user provides trait values for a single trait, then \code{owntraitvals} can be a vector of length \code{n} or a matrix with \code{n} rows and 1 column.
 Categorical trait values should consist of integers that each indicates a category.
 Continuous trait values should consist of numbers between 0 and 1, and empirical trait values on other scales should be transformed to this scale before being used.
 The trait values must fit with the trait classes given in the \code{owntraitclasses} argument.
@@ -134,20 +115,19 @@ About \code{owntraitclasses}:
 }
 \examples{
 
-# A network based on two traits with popularity and similarity preferences,
-# respectively (this corresponds to the minimal version of the trait preference
-# model, see References):
+# A network based on two traits combined a popularity and a similarity preference,
+# respectively:
 
 traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'), allncats = c(5, NA),
-preftypes = c('sim', 'pop'), linktype = 'stow', wvals = c(0.5, 0.5),
+preftypes = c('simclose', 'pophigh'), linktype = 'stow', wvals = c(0.5, 0.5),
 onecomp = TRUE, visnet = TRUE)
 
 
-# The same as the above example, but where the categorical similarity trait is of
-# high importance and the other trait (with popularity) of no importance:
+# The same as the above example, but where one preference-trait combination is of
+# high importance and the other preference-trait combination of no importance:
 
 traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'), allncats = c(5, NA),
-preftypes = c('sim', 'pop'), linktype = 'stow', wvals = c(0.9, 0),
+preftypes = c('simclose', 'pophigh'), linktype = 'stow', wvals = c(0.9, 0),
 onecomp = TRUE, visnet = TRUE)
 
 
@@ -159,7 +139,7 @@ k <- 10
 linktype <- 'stow'
 traittypes <- c('cate', 'tnorm', 'ranks')
 allncats <- c(5, NA, NA)
-preftypes <- c('sim', 'pop', 'sim')
+preftypes <- c('simclose', 'pophigh', 'simfar')
 wvals <- c(0.5, 0.1, 0.3)
 
 traitnetoutput <- traitnet(n=100, k=10, traittypes = traittypes, allncats = allncats,
@@ -178,7 +158,7 @@ k <- 10
 linktype <- 'stow'
 traittypes <- c('own', 'own')
 allncats <- c(NA, 2)
-preftypes <- c('pop', 'sim')
+preftypes <- c('pophigh', 'simclose')
 wvals <- c(0.1, 0.85)
 owntraitvals <- cbind(sample(100)/100, sample(1:2,100, replace = T))
 owntraitclasses <- c('cont', 'cate')
@@ -188,10 +168,10 @@ preftypes = preftypes, linktype = linktype, wvals = wvals, onecomp = TRUE,
 visnet = TRUE, owntraitclasses = owntraitclasses, owntraitvals = owntraitvals)
 }
 \references{
-Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 \url{https://ecoevorxiv.org/repository/view/9622/}
 
-Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 
 Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.

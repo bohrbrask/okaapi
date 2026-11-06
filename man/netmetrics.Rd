@@ -27,19 +27,19 @@ About \code{net}:
 
 About \code{metrics}:
 \itemize{
-\item 'clust' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
-\item 'clustw' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
-\item 'path' gives the average path length, i.e. the average unweighted distance between nodes.
-\item 'pathw' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
+\item 'clustering' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
+\item 'w. clustering' gives the weighted clustering coefficient (as defined in Barrat et al. 2004, see References). Nodes with one link get a weighted clustering of zero.
+\item 'average path length' gives the average path length, i.e. the average unweighted distance between nodes.
+\item 'average w. path length' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
 \itemize{
 \item For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
 }
-\item 'avdeg' gives the average degree.
-\item 'avdegw' gives the average weighted degree (also called strength).
-\item 'degassort' gives the degree assortativity.
-\item 'degassortw' gives the weighted degree assortativity.
-\item 'degvar' gives the degree variation (variance).
-\item 'degvarw' gives the weighted degree variation (variance).
+\item 'average degree' gives the average degree.
+\item 'average w. degree' gives the average weighted degree (also called strength).
+\item degree assortativity' gives the degree assortativity.
+\item 'w. degree assortativity' gives the weighted degree assortativity.
+\item 'degree variation' gives the degree variation (variance).
+\item 'w. degree variation' gives the weighted degree variation (variance).
 }
 }
 \examples{
@@ -47,13 +47,13 @@ About \code{metrics}:
 # An example that uses a network created with the traitnet function:
 
 traitnetoutput <- traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'),
-allncats = c(5, NA), preftypes = c('sim', 'pop'), linktype = 'stow',
+allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), linktype = 'stow',
 wvals = c(0.8, 0.1), onecomp = TRUE, visnet = TRUE)
 
 net <- traitnetoutput$net
 
-metrics <- c('clust', 'clustw', 'path', 'pathw', 'avdeg', 'avdegw',
-'degassort', 'degassortw', 'degvar', 'degvarw')
+metrics <- c('clustering', 'w. clustering', 'average path length', 'average w. path length', 'average degree', 'average w. degree',
+'degree assortativity', 'w. degree assortativity', 'degree variation', 'w. degree variation')
 
 netmetrics(net, metrics)
 
@@ -72,7 +72,7 @@ scalenet <-  as_adjacency_matrix(sample_pa(100, directed = FALSE),
 type = 'both', names = FALSE, sparse = FALSE)
 
 # Calculate clustering and path length for the two networks
-metrics <- c('clust', 'path')
+metrics <- c('clustering', 'average path length')
 randnetmetrics <- netmetrics(randnet, metrics)
 scalenetmetrics <- netmetrics(scalenet, metrics)
 }

@@ -9,7 +9,7 @@ traitnetsociat(traitclasses, preftypes, wvals, traitvals)
 \arguments{
 \item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)}
 
-\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('sim', or 'pop'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
 
 \item{wvals}{A vector with the importance (weight) of each trait-preference combination}
 
@@ -24,8 +24,8 @@ The social attraction can be based on one or multiple traits, which may be used 
 }
 \details{
 The \code{traitnetsociat()} function calculates the social attraction for each pair of individuals, based on the two individuals'
-trait values (attributes), and the preference type and importance (weight) set for each trait (such that traits with higher weight have more influence on the social attraction).
-The calculation follows the preference model (see References).
+trait values (attributes), the preference type set for each trait, and importance (weight) set for each preference-trait combination.
+The calculation follows the trait preference model (see References).
 
 To construct networks based on the trait preference model, it is recommended to use the \code{traitnet()} and \code{traitnetsmetrics()} functions.
 Those functions call this one, and there is thus no need to use this one directly.
@@ -43,9 +43,13 @@ About \code{traitclasses}:
 
 About \code{preftypes}:
 \itemize{
-\item There are two preference types: 'similarity' and 'popularity' (as described in Brask et al., see References).
-\item 'sim' indicates that individuals prefer others that are similar to themselves in terms of the trait.
-\item 'pop' indicates that individuals with high trait values are preferred (popular).
+\item Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+\item For similarity preferences, the preference depends on the distance (similarity) between trait values.
+\item For popularity preferences, the preference depends on the magnitude of the trait values.
+\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
+\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+\item 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
+\item 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 }
 
 About \code{wvals}:
@@ -76,7 +80,7 @@ traitvals <- cbind(tval1, tval2, tval3)
 # Set the class, preference type and importance for each trait
 (The trait classes must fit with the trait values):
 traitclasses <- c('cate', 'cont', 'cont')
-preftypes <- c('sim', 'pop', 'sim')
+preftypes <- c('simclose', 'pophigh', 'simfar')
 wvals <- c(0.7, 0.1, 0.1)
 
 # Generate the social attraction values:
@@ -86,10 +90,10 @@ sociatvals <- traitnetsociat(traitclasses, preftypes, wvals, traitvals)
 
 }
 \references{
-Brask, J. B., Brent, L. J., & De Moor, D. (2025). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
+Brask, J. B., Brent, L. J., & De Moor, D. (2026a). okaapi: an R package for generating social networks based on trait preferences. EcoEvoRxiv.
 \url{https://ecoevorxiv.org/repository/view/9622/}
 
-Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
+Brask, J. B., Koher, A., Croft, D. P., & Lehmann, S. (2026b). Far-reaching consequences of trait preferences for animal social network structure and function. Behavioral Ecology, 37(1), araf132.
 \url{https://academic.oup.com/beheco/article/37/1/araf132/8339509}
 
 Brask, J. B., Silk, M., & Weiss, M. N. (2025). An introduction to generative network models and their use in animal sociality research. Animal Behaviour, 123364.
