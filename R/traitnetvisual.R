@@ -4,59 +4,57 @@
 
 #' Plot a trait preference network
 #'
-#' `traitnetvisual()` makes a plot of a trait preference network,
-#' where the node sizes correspond to trait values for the popularity trait (if any) with the highest importance,
-#' and the node colours correspond to trait values for the similarity trait (if any) with the highest importance.
+#' `traitnetvisual()` makes a plot of a trait preference network, where the sizes and colours of the nodes correspond to trait values.
+#'
+#' NOTE: to plot trait preference networks, it is better to use the `traitnet()` function (which calls this function).
+#'
+#' The `traitnetvisual()` function uses two methods for determining the sizes and colours of nodes:
+#' * 'Default method (when the `vistraitnum` argument is not set): The node size is based on the popularity trait (if any) with highest importance (wval). The node colour is based on the similarity trait (if any) with highest importance (wval).
+#' * 'User-specified method (when the `vistraitnum` argument is set): The user sets the traits to be used for node sizes and colouring. The user can also set one of them, in which case the other (size or colour) will be uniform rather than correspond to a trait.
+#'
+#' Furthermore, to make a nice visualization, the average node size is adjusted based on the number of nodes, and the link width is adjusted based on whether the network is weighted or not. The layout itself is done with `igraph` plotting.
 #'
 #'
-#' All the arguments (other than `net`) must be the ones that were used for the creation of input network, otherwise the visualization will be misleading.
-#' A safer option is to use `traitnet()`, which can produce a network plot together with a network matrix.
+#' Generally about function arguments:
 #'
-#' The node size is based on the popularity trait (if any) with highest weight (wval value).
-#' The node colour is based on the similarity trait (if any) with highest weight (wval value).
-#' To make a nice visualization, the average node size is adjusted based on the number of nodes,
-#' and the link width is adjusted based on whether the network is weighted or not.
-#' The layout itself is done with `igraph` plotting.
+#' All the arguments other than `net` must be the ones that were used for the creation of the input network (`net`), otherwise the visualization will be misleading (a safer option is to use the `traitnet()` function, which calls this function).
 #'
-#' About `net`:
-#' * The network matrix must be undirected and symmetric, with zeros in the diagonal.
 #'
 #' About `traitclasses`:
 #' * 'cate' indicates a categorical trait.
 #' * 'cont' indicates a continuous trait.
 #'
 #' About `preftypes`:
-#' * Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
-#' * For similarity preferences, the preference depends on the distance (similarity) between trait values.
-#' * For popularity preferences, the preference depends on the magnitude of the trait values.
-#' * 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
-#' * 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+#'
+#' Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+#' For similarity preferences, the preference depends on the distance (similarity) between trait values.
+#' For popularity preferences, the preference depends on the magnitude of the trait values.
+#' * 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e more similar; homophily).
+#' * 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. less similar<, heterophily).
 #' * 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
 #' * 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 #'
 #' About `linktype`:
 #' * 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
-#' * 'stow' gives weighted links with stochasticity, where the weights are drawn from distributions with the social attraction values as means.
-#' * 'detw' gives deterministic weighted links, where the weight equals the social attraction of the dyad.
-#' For weighted links, the link weights are in the interval \[0,1], and existing links have a minimum weight of 0.001.
-#'
-#' About `wvals`:
-#' * The sum of the `wval` vector, and each value in the vector, must lie in the interval \[0,1], where 0 indicates no importance and 1 indicates full importance.
+#' * 'stow' gives weighted links with stochasticity, where the link weights are drawn from distributions with the social attraction values (sociatvals) as means.
+#' * 'detw' gives deterministic weighted links, where the link weights equal the social attraction values (sociatvals).
 #'
 #' About `traitvals`:
-#' * The trait values must fit with the trait classes given in the `traitclasses` argument.
-#' * Categorical trait values should consist of integers that each indicates a category.
-#' * Continuous trait values should consist of numbers between 0 and 1. Empirical trait values on other scales should be transformed to this scale before being used.
+#'
+#' The trait values must fit with the trait classes given in the `traitclasses` argument.
+#' Categorical trait values should consist of integers that each indicates a category.
+#' Continuous trait values should consist of numbers between 0 and 1. Empirical trait values on other scales should be transformed to this scale before being used.
 #'
 #'
-#' @param net The network adjacency matrix to be plotted
-#' @param traitclasses A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)
-#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)
-#' @param linktype A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)
-#' @param wvals A vector with the importance (weight) of each trait-preference combination
-#' @param traitvals A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait
+#' @param net The network (adjacency matrix) to be plotted.The matrix must be undirected and symmetric, with zeros in the diagonal.
+#' @param traitclasses A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details).
+#' @param preftypes A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details).
+#' @param linktype A string indicating the type of network links ('stow', 'detw', or 'unw'; see Details).
+#' @param wvals A vector with numbers between 0 and 1 (must sum to 1 or less), indicating the importance (weight) of each trait preference.
+#' @param traitvals A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait (see Details).
+#' @param vistraitnum If not set then the default plotting method is used (see Details). A vector of two integers indicating the trait to be used for the colouring (first integer) and sizes (second integer) of nodes in the network plot, with the integers refering to the places of the traits in the traittypes vector. Either can also be NA.
 #'
-#' @return A plot of a network.
+#' @return A network plot.
 #' @export
 
 #' @references
@@ -79,8 +77,8 @@
 #'
 #' @examples
 #'
-#' # Here we first make a trait preference network by using `traitvals()`,
-#' # `sociatvals()` and `traitnetbuild()`, and then we visualize it.
+#' # Here we first make a trait preference network by using `traitvalues()`,
+#' # `traitnetsociat()` and `traitnetbuild()`, and then we visualize it.
 #' # This is not a recommended procedure, as you can make and visualize a trait
 #' # preference network with the `traitnet()` function alone, which is safer.
 #'
@@ -159,7 +157,6 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
   }
 
 
-
   # if vistraitnum not lenght 2 stop
   # if vistraitnum not integers stop
   # if vistraitnum higher than number of traits stop
@@ -181,49 +178,6 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
   igraph::V(igraphnet)$label <- NA
 
 
-
-
-
-
-
-  # function to set nodesizes
-
-  # getnodesizes <- function(sizeplace, traitclasses, traitvals, nodesizescale){
-  #   sizetraitclass <- traitclasses[sizeplace]
-  # sizetraitvals <- traitvals[,sizeplace]
-  # if (sizetraitclass == 'cate') {
-  #   nodesizes <- nodesizescale*sizetraitvals/max(sizetraitvals)
-  # } else if (sizeclass =='cont') {
-  #   nodesizes <- nodesizescale*sizetraitvals+3
-  # }
-  # return(nodesizes)
-  # }
-
-
-  # function to set nodecolours
-
-#   getnodecolours <- function(coloplace){
-#   coloclass <- traitclasses[coloplace]
-#   tcolo <- traitvals[,coloplace]
-#   if (coloclass == 'cate') {
-#     nodecolours <- tcolo
-#     ncolocats <- length(unique(tcolo))
-#     igraphnet$palette <- igraph::sequential_pal(ncolocats)
-#   } else {
-#     reddishcols = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000')
-#     if (coloclass == 'cont') {
-#       nodecolours <- contincols(cols = reddishcols, colvals = tcolo)
-#     }
-#   }
-#   return(nodecolours)
-# }
-
-
-
-
-
-
-  # SETTING NODE SIZES AND COLOURS
 
 
   if (!is.null(vistraitnum)) {
@@ -303,15 +257,6 @@ traitnetvisual <- function(net, traitclasses, preftypes, linktype, wvals, traitv
 
  traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale)
 
-
- # REMOVE, USED TO CHECK NEW FEATURES
-
- #igraph::V(igraphnet)$size <- 3
- #ordered_vertices <- order(V(igraphnet)$color)
- #layout <- layout_in_circle(igraphnet, order = ordered_vertices)
- #traitnetplot <- igraph::plot.igraph(igraphnet, edge.width=igraph::E(igraphnet)$weight*linksizescale, layout =layout)
- #print(assortativity_nominal(igraphnet, tsim, directed = FALSE))
- #print(assortativity(igraphnet, tsim, directed = FALSE))
 
 
   return(traitnetplot)

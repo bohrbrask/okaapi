@@ -7,7 +7,7 @@
 traitvalues(n, traittype, ncats)
 }
 \arguments{
-\item{n}{An integer indicating the number of trait values to be made (i.e. number of individuals for which the trait values are made)}
+\item{n}{An integer indicating the number of trait values to be made (e.g. the number of individuals for which the trait values are made)}
 
 \item{traittype}{A string indicating the trait type ('cate', 'tnorm', 'ranks', or 'unif'; see Details)}
 
@@ -20,16 +20,17 @@ A vector of trait values. The vector has length \code{n}. The values are in rand
 \code{traitvalues()} generates a vector of trait values based on a given trait type.
 }
 \details{
-To generate trait values, the function draws values from a distribution that corresponds to the given trait type.
+NOTE: If the trait values are to be used in the generation of trait preference networks, then it is better to use the \code{traitnet()} or \code{traitnetsmetrics()} function (which call this function).
 
-To make networks based on trait preferences, it is recommended to use the \code{traitnet()} or \code{traitnetsmetrics()} functions.
-Those functions call this function and there is no need to use this function directly.
+To generate trait values, the \code{traitvalues()} function draws values from a distribution that corresponds to the given trait type.
 
 About \code{traittype}:
+
+Different trait types correspond to different distributions. A given trait type may be used to model any specific trait that fits with the distribution.
 \itemize{
-\item 'cate'  gives categorical trait values. The values consist of the integers from 1 to \code{ncats}, which each indicates a category. Each category is drawn with the same probability.
+\item 'cate'  gives categorical trait values. The values consist of the integers from 1 to the number of categories, with each integer ndicating a category. Each category is drawn with the same probability.
 \item 'tnorm' gives normally distributed trait values (truncated). The values are drawn from a truncated normal distribution that lie in the interval [0,1], with mean = 0.5 and standard deviation = 0.25.
-\item 'ranks' gives trait values indicating ranks (e.g. social rank). The values are homogeneously distributed in the interval [0,1]. This corresponds to ranks indicated by integers from 1 to \code{n}, transformed to the interval [0,1].
+\item 'ranks' gives trait values indicating ranks (e.g. social rank). The values are equally distributed in the interval [0,1]. This corresponds to ranks indicated by integers from 1 to n, transformed to the interval [0,1].
 \item 'unif'  gives uniformly distributed trait values. The values are drawn from a uniform distribution with the interval [0,1].
 }
 }

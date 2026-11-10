@@ -15,40 +15,40 @@ traitnetvisual(
 )
 }
 \arguments{
-\item{net}{The network adjacency matrix to be plotted}
+\item{net}{The network (adjacency matrix) to be plotted.The matrix must be undirected and symmetric, with zeros in the diagonal.}
 
-\item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)}
+\item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details).}
 
-\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details).}
 
-\item{linktype}{A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)}
+\item{linktype}{A string indicating the type of network links ('stow', 'detw', or 'unw'; see Details).}
 
-\item{wvals}{A vector with the importance (weight) of each trait-preference combination}
+\item{wvals}{A vector with numbers between 0 and 1 (must sum to 1 or less), indicating the importance (weight) of each trait preference.}
 
-\item{traitvals}{A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait}
+\item{traitvals}{A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait (see Details).}
+
+\item{vistraitnum}{If not set then the default plotting method is used (see Details). A vector of two integers indicating the trait to be used for the colouring (first integer) and sizes (second integer) of nodes in the network plot, with the integers refering to the places of the traits in the traittypes vector. Either can also be NA.}
 }
 \value{
-A plot of a network.
+A network plot.
 }
 \description{
-\code{traitnetvisual()} makes a plot of a trait preference network,
-where the node sizes correspond to trait values for the popularity trait (if any) with the highest importance,
-and the node colours correspond to trait values for the similarity trait (if any) with the highest importance.
+\code{traitnetvisual()} makes a plot of a trait preference network, where the sizes and colours of the nodes correspond to trait values.
 }
 \details{
-All the arguments (other than \code{net}) must be the ones that were used for the creation of input network, otherwise the visualization will be misleading.
-A safer option is to use \code{traitnet()}, which can produce a network plot together with a network matrix.
+NOTE: to plot trait preference networks, it is better to use the \code{traitnet()} function (which calls this function).
 
-The node size is based on the popularity trait (if any) with highest weight (wval value).
-The node colour is based on the similarity trait (if any) with highest weight (wval value).
-To make a nice visualization, the average node size is adjusted based on the number of nodes,
-and the link width is adjusted based on whether the network is weighted or not.
-The layout itself is done with \code{igraph} plotting.
-
-About \code{net}:
+The \code{traitnetvisual()} function uses two methods for determining the sizes and colours of nodes:
 \itemize{
-\item The network matrix must be undirected and symmetric, with zeros in the diagonal.
+\item 'Default method (when the \code{vistraitnum} argument is not set): The node size is based on the popularity trait (if any) with highest importance (wval). The node colour is based on the similarity trait (if any) with highest importance (wval).
+\item 'User-specified method (when the \code{vistraitnum} argument is set): The user sets the traits to be used for node sizes and colouring. The user can also set one of them, in which case the other (size or colour) will be uniform rather than correspond to a trait.
 }
+
+Furthermore, to make a nice visualization, the average node size is adjusted based on the number of nodes, and the link width is adjusted based on whether the network is weighted or not. The layout itself is done with \code{igraph} plotting.
+
+Generally about function arguments:
+
+All the arguments other than \code{net} must be the ones that were used for the creation of the input network (\code{net}), otherwise the visualization will be misleading (a safer option is to use the \code{traitnet()} function, which calls this function).
 
 About \code{traitclasses}:
 \itemize{
@@ -57,12 +57,13 @@ About \code{traitclasses}:
 }
 
 About \code{preftypes}:
+
+Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+For similarity preferences, the preference depends on the distance (similarity) between trait values.
+For popularity preferences, the preference depends on the magnitude of the trait values.
 \itemize{
-\item Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
-\item For similarity preferences, the preference depends on the distance (similarity) between trait values.
-\item For popularity preferences, the preference depends on the magnitude of the trait values.
-\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
-\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e more similar; homophily).
+\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. less similar<, heterophily).
 \item 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
 \item 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 }
@@ -70,27 +71,20 @@ About \code{preftypes}:
 About \code{linktype}:
 \itemize{
 \item 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
-\item 'stow' gives weighted links with stochasticity, where the weights are drawn from distributions with the social attraction values as means.
-\item 'detw' gives deterministic weighted links, where the weight equals the social attraction of the dyad.
-For weighted links, the link weights are in the interval [0,1], and existing links have a minimum weight of 0.001.
-}
-
-About \code{wvals}:
-\itemize{
-\item The sum of the \code{wval} vector, and each value in the vector, must lie in the interval [0,1], where 0 indicates no importance and 1 indicates full importance.
+\item 'stow' gives weighted links with stochasticity, where the link weights are drawn from distributions with the social attraction values (sociatvals) as means.
+\item 'detw' gives deterministic weighted links, where the link weights equal the social attraction values (sociatvals).
 }
 
 About \code{traitvals}:
-\itemize{
-\item The trait values must fit with the trait classes given in the \code{traitclasses} argument.
-\item Categorical trait values should consist of integers that each indicates a category.
-\item Continuous trait values should consist of numbers between 0 and 1. Empirical trait values on other scales should be transformed to this scale before being used.
-}
+
+The trait values must fit with the trait classes given in the \code{traitclasses} argument.
+Categorical trait values should consist of integers that each indicates a category.
+Continuous trait values should consist of numbers between 0 and 1. Empirical trait values on other scales should be transformed to this scale before being used.
 }
 \examples{
 
-# Here we first make a trait preference network by using `traitvals()`,
-# `sociatvals()` and `traitnetbuild()`, and then we visualize it.
+# Here we first make a trait preference network by using `traitvalues()`,
+# `traitnetsociat()` and `traitnetbuild()`, and then we visualize it.
 # This is not a recommended procedure, as you can make and visualize a trait
 # preference network with the `traitnet()` function alone, which is safer.
 

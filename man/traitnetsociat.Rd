@@ -7,30 +7,30 @@
 traitnetsociat(traitclasses, preftypes, wvals, traitvals)
 }
 \arguments{
-\item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details)}
+\item{traitclasses}{A vector of strings indicating the trait class for each trait ('cate' or 'cont'; see Details).}
 
-\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details).}
 
-\item{wvals}{A vector with the importance (weight) of each trait-preference combination}
+\item{wvals}{A vector with numbers between 0 and 1 (must sum to 1 or less), indicating the importance (weight) of each trait preference.}
 
-\item{traitvals}{A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait}
+\item{traitvals}{A matrix with a column of trait values for each trait, and a row for each individual. Can be a vector if there is only a single trait (see Details).}
 }
 \value{
-A vector of social attraction values (one value for each pair of individuals). The values are ordered in the following way (with integers indicating names of individuals): 1&2, 1&3, ..., 1&n, 2&3, 2&4, ..., 2&n, ... n-1 and n.
+A vector of social attraction values (one value for each pair of individuals). The values are ordered in the following way (with integers indicating names of individuals, corresponding to the rows in the traitvals argument): 1&2, 1&3, ..., 1&n, 2&3, 2&4, ..., 2&n, ... n-1 and n.
 }
 \description{
-\code{traitnetsociat()} calculates social attraction values between individuals, based on social preferences for traits (attributes).
-The social attraction can be based on one or multiple traits, which may be used with different preference types.
+\code{traitnetsociat()} calculates social attraction values between individuals, based on social preferences for traits.
+The social attraction can be based on one or multiple trait preferences.
 }
 \details{
+NOTE: for generation of social attraction values and trait preference networks, it is better to use the \code{traitnet()} or \code{traitnetsmetrics()} function (which call this function).
+
 The \code{traitnetsociat()} function calculates the social attraction for each pair of individuals, based on the two individuals'
-trait values (attributes), the preference type set for each trait, and importance (weight) set for each preference-trait combination.
-The calculation follows the trait preference model (see References).
+trait values, and the trait preference type and importance set for each trait. The calculation follows the trait preference model (see References).
 
-To construct networks based on the trait preference model, it is recommended to use the \code{traitnet()} and \code{traitnetsmetrics()} functions.
-Those functions call this one, and there is thus no need to use this one directly.
+About function arguments:
 
-The function assumes that each input is ordered in the same way. For example, the first trait class given in the
+The function assumes that each input is ordered in the same way in terms of their contents. For example, the first trait class given in the
 \code{traitclasses} vector will be matched with the first preference type given in the \code{preftype} vector, the first
 importance value given in the \code{wvals} vector, and the first column of trait values in the \code{traitvals} matrix. This also
 means that the trait values for a given trait must be of the class given for that trait.
@@ -42,19 +42,15 @@ About \code{traitclasses}:
 }
 
 About \code{preftypes}:
+
+Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+For similarity preferences, the preference depends on the distance (similarity) between trait values.
+For popularity preferences, the preference depends on the magnitude of the trait values.
 \itemize{
-\item Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
-\item For similarity preferences, the preference depends on the distance (similarity) between trait values.
-\item For popularity preferences, the preference depends on the magnitude of the trait values.
-\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
-\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e more similar; homophily).
+\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. less similar<, heterophily).
 \item 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
 \item 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
-}
-
-About \code{wvals}:
-\itemize{
-\item The sum of the \code{wval} vector, and each value in the vector, must lie in the interval [0,1], where 0 indicates no importance and 1 indicates full importance.
 }
 
 About \code{traitvals}:
@@ -77,7 +73,7 @@ tval2 <- traitvalues(n = n, traittype = traittypes[2])
 tval3 <- traitvalues(n = n, traittype = traittypes[3])
 traitvals <- cbind(tval1, tval2, tval3)
 
-# Set the class, preference type and importance for each trait
+# Set the class, preference type and importance (wvals) for each trait:
 (The trait classes must fit with the trait values):
 traitclasses <- c('cate', 'cont', 'cont')
 preftypes <- c('simclose', 'pophigh', 'simfar')

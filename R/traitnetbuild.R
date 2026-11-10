@@ -2,33 +2,27 @@
 #' Build a network matrix based on social attraction values
 #'
 #' `traitnetbuild()` generates a network (an adjacency matrix) based on social attraction values,
-#' such that pairs of individuals with higher social attraction are more likely to get a link.
+#' such that pairs of individuals with higher social attraction are more likely to get a link, and (for weighted networks) get a larger link weight.
 #'
+#' NOTE: If the network building is to be used in the generation of trait preference networks, then it is better to use the `traitnet()` or `traitnetsmetrics()` function (which call this function).
+#'
+#' The `traitnetbuild()` function works in the following way:
 #' The number of links is calculated based on the set average degree and number of individuals.
 #' Then the dyads to be linked are found by a weighted draw, where dyads with higher social attraction have a higher chance of being picked.
-#' The link weights are determined based on the set link type and added to the existing links.
-#'
-#' To construct networks based on the trait preference model, it is recommended to use the `traitnet()` and `traitnetsmetrics()` functions.
-#' Those functions call this one, and there is thus no need to use this one directly.
-#'
-#' The number of individuals `n` must fit with the length of the `sociatvals` vector (which equals the number of dyads).
-#'
-#' If there are not enough dyads with social attraction values above zero to give the input average degree,
-#' then random links will be added among the remaining dyads to get the input average degree.
+#' The link weights are determined based on the set link type and added to the existing links. If there are not enough dyads with social attraction values above zero to give the input average degree,
+#' then random links will be added among the remaining dyads to get the set average degree.
 #'
 #' About `linktype`:
 #' * 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
-#' * 'stow' gives weighted links with stochasticity, where the weights are drawn from normal distributions with the social attraction values as means (sd = 0.05).
-#' * 'detw' gives deterministic weighted links, where the weight equals the social attraction of the dyad.
-#' * For weighted links, the link weights are in the interval \[0,1], and existing links have a minimum weight of 0.001.
+#' * 'stow' gives weighted links with stochasticity, where the link weights are drawn from distributions with the social attraction values (sociatvals) as means.
+#' * 'detw' gives deterministic weighted links, where the link weights equal the social attraction values (sociatvals).
 #'
-#'
-#' @param n An integer indicating the number of individuals (network nodes)
-#' @param k An integer indicating the average degree (average number of links connected to each node)
-#' @param linktype A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)
+#' @param n An integer indicating the number of individuals (nodes) in the network. Must fit with the length of the sociatvals argument.
+#' @param k An integer indicating the average degree of the network, i.e. the average number of links each individual (node) has.
+#' @param linktype A string indicating the type of network links ('stow', 'detw', or 'unw'; see Details).
 #' @param sociatvals A vector with a social attraction value (a number between 0 and 1) for each pair of individuals (each dyad of nodes)
 #'
-#' @return An undirected network matrix (adjacency matrix). The matrix is symmetric, with zeros in the diagonal.
+#' @return An network matrix (adjacency matrix). The matrix is undirected and symmetric, with zeros in the diagonal.
 #' @export
 #'
 #'@references
@@ -51,13 +45,12 @@
 #'
 #' @examples
 #'
+#' # Create input:
 #' n <- 100
 #' k <- 10
 #' linktype <- 'stow'
 #'
-#' # For the example we use random values as social attraction values
-#' # (see the examples in the `traitnetsociat()`  help page to generate
-#' social attraction values based on the trait preference model):
+#' # For the example we use random values as social attraction values:
 #' ndyads <- (n*n-n)/2
 #' sociatvals <-  runif(ndyads)
 #'

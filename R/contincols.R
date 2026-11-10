@@ -1,16 +1,14 @@
 
-#' Create colours based on values
+#' Create colours based on values from a continuous scale
 #'
 #' `contincols()` creates a set of colours based on a set of values and a colour scale, such that the distances between the colours correspond to the distances between the values.
 #' The colours can be used to colour the nodes of an `igraph` network plot, based on a node attribute.
 #'
-#' For valid formats of cols see the col argument of the `col2rgb()` function.
-#' Values in `colvals` must be between 0 and 1.
-#' If the colours are used to colour the nodes of a network, then the length of `colvals` should equal the number of nodes in that network.
+#' NOTE: If the colours are to be used in the plotting of trait preference networks, then it is better to use the `traitnet()` function (which calls this function).
 #'
 #'
-#' @param cols A vector with two or more colours from which the colour scale is created by extrapolation between the colours
-#' @param colvals A vector with values (for example values of a node attribute)
+#' @param cols A vector with two or more colours from which the colour scale is created by extrapolation between the colours. For valid formats see the col argument of the `col2rgb()` function.
+#' @param colvals A vector with values between 0 and 1. If the colours are used to colour the nodes of a network, then the length of the vector should equal the number of network nodes.
 #'
 #' @return A vector with colours that can be used directly to set the node colours of an `igraph` network plot.
 #' @export
@@ -24,7 +22,7 @@
 #'
 #' @examples
 #'
-#' # An example of colouring an igraph network based on node values:
+#' # An example of colouring an igraph network based on node attribute values:
 #'
 #' # set colours for colour scale:
 #' cols <- c('#CCFFFF','#003366')

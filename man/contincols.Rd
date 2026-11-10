@@ -2,14 +2,14 @@
 % Please edit documentation in R/contincols.R
 \name{contincols}
 \alias{contincols}
-\title{Create colours based on values}
+\title{Create colours based on values from a continuous scale}
 \usage{
 contincols(cols, colvals)
 }
 \arguments{
-\item{cols}{A vector with two or more colours from which the colour scale is created by extrapolation between the colours}
+\item{cols}{A vector with two or more colours from which the colour scale is created by extrapolation between the colours. For valid formats see the col argument of the \code{col2rgb()} function.}
 
-\item{colvals}{A vector with values (for example values of a node attribute)}
+\item{colvals}{A vector with values between 0 and 1. If the colours are used to colour the nodes of a network, then the length of the vector should equal the number of network nodes.}
 }
 \value{
 A vector with colours that can be used directly to set the node colours of an \code{igraph} network plot.
@@ -19,13 +19,11 @@ A vector with colours that can be used directly to set the node colours of an \c
 The colours can be used to colour the nodes of an \code{igraph} network plot, based on a node attribute.
 }
 \details{
-For valid formats of cols see the col argument of the \code{col2rgb()} function.
-Values in \code{colvals} must be between 0 and 1.
-If the colours are used to colour the nodes of a network, then the length of \code{colvals} should equal the number of nodes in that network.
+NOTE: If the colours are to be used in the plotting of trait preference networks, then it is better to use the \code{traitnet()} function (which calls this function).
 }
 \examples{
 
-# An example of colouring an igraph network based on node values:
+# An example of colouring an igraph network based on node attribute values:
 
 # set colours for colour scale:
 cols <- c('#CCFFFF','#003366')

@@ -5,12 +5,11 @@
 #'`netmetrics()` measures a set of network metrics on an input network.
 #'
 #'
-#'The function uses the `igraph` package for some of the metric calculations.
+#'#' NOTE: To measure network metrics on trait preference networks, it is better to use the `traitnetsmetrics()` function (which calls this function).
 #'
+#'The `netmetrics()` function uses the `igraph` package for some of the metric calculations.
 #'
-#' About `net`:
-#' * The input network must be undirected, and the network matrix must be symmetric with zeros in the diagonal.
-#'
+
 #' About `metrics`:
 #'
 #' * 'clustering' gives the global clustering coefficient, also called transitivity (measured as the ratio of triangles to connected triples).
@@ -18,22 +17,22 @@
 #'
 #' * 'average path length' gives the average path length, i.e. the average unweighted distance between nodes.
 #' * 'average w. path length' gives the average weighted path length, i.e. the average weighted distance between nodes (with smaller distances for larger weights).
-#'   - For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
+#'    - For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
 #'
-#' * 'average degree' gives the average degree.
-#' * 'average w. degree' gives the average weighted degree (also called strength).
+#' * 'average degree' gives the average degree, i.e. the average number of links connected to each node.
+#' * 'average w. degree' gives the average weighted degree (also called strength), i.e. the sum of the weights of the links connected to each node.
 #'
-#' * degree assortativity' gives the degree assortativity.
+#' * 'degree assortativity' gives the degree assortativity.
 #' * 'w. degree assortativity' gives the weighted degree assortativity.
 #'
 #' * 'degree variation' gives the degree variation (variance).
 #' * 'w. degree variation' gives the weighted degree variation (variance).
 #'
 #'
-#' @param net A network (adjacency matrix)
-#' @param metrics A vector of strings indicating the metrics that should be measured (see Details)
+#' @param net The network (adjacency matrix) to be plotted.The matrix must be undirected and symmetric, with zeros in the diagonal.
+#' @param metrics A vector of strings indicating the metrics that should be measured (see Details).
 #'
-#' @return A vector with a value for each of the metrics specified in the `metrics` argument. The columns are named with the metric names given in the `metrics` argument.
+#' @return A vector with a value for each of the metrics specified in the `metrics` argument. The cells are named with the metric names given in the `metrics` argument.
 
 #' @export
 
@@ -49,7 +48,7 @@
 #'
 #' @examples
 #'
-#' # An example that uses a network created with the traitnet function:
+#' # An example that uses a network created with the traitnet function (this is not recommended, it is better to use the traitnetsmetrics function):
 #'
 #' traitnetoutput <- traitnet(n=100, k=10, traittypes = c('cate', 'tnorm'),
 #' allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), linktype = 'stow',
@@ -64,7 +63,7 @@
 #'
 #'
 #' # An example of calculating clustering and path length on
-#' two common network types (made with igraph):
+#' two common network types made with igraph:
 #'
 #'library(igraph)
 #'
@@ -72,7 +71,7 @@
 #' randnet <-  as_adjacency_matrix(sample_gnp(100, 0.1), type = 'both',
 #' names = FALSE, sparse = FALSE)
 #'
-#' # A scale-free (Barabasi-Albert) network
+#' # A scale-free network
 #' scalenet <-  as_adjacency_matrix(sample_pa(100, directed = FALSE),
 #' type = 'both', names = FALSE, sparse = FALSE)
 #'

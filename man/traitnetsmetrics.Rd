@@ -5,78 +5,83 @@
 \title{Measure network metrics on a set of networks}
 \usage{
 traitnetsmetrics(
-  n,
-  k,
   traittypes,
   allncats,
   preftypes,
-  linktype,
   wvals,
+  n,
+  k,
+  linktype,
   onecomp,
-  nrepls,
   metrics,
+  nrepls,
   showrepl = TRUE,
   owntraitclasses = NULL,
   owntraitvals = NULL
 )
 }
 \arguments{
-\item{n}{An integer indicating the number of individuals (network nodes)}
+\item{traittypes}{A vector of strings indicating the trait type for each trait ('cate', 'tnorm', 'ranks', 'unif' or 'own'; see Details).}
 
-\item{k}{An integer indicating the average degree (average number of links connected to each node)}
+\item{allncats}{A vector of integers indicating the number of categories for each trait (must be set to NA for non-categorical traits).}
 
-\item{traittypes}{A vector of strings indicating the trait type for each trait ('cate', 'tnorm', 'ranks', 'unif' or 'own'; see Details)}
+\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details).}
 
-\item{allncats}{A vector of integers indicating the number of categories for each trait (numbers for non-categorical traits are not used and may be set to NA, but must be included in the vector)}
+\item{wvals}{A vector with numbers between 0 and 1 (must sum to 1 or less), indicating the importance (weight) of each trait preference.}
 
-\item{preftypes}{A vector of strings indicating the preference type to be used with each trait ('simclose', 'simfar', 'pophigh' or 'poplow'; see Details)}
+\item{n}{An integer indicating the number of individuals (nodes) in the network.}
 
-\item{linktype}{A string indicating the type of link ('stow', 'detw', or 'unw'; see Details)}
+\item{k}{An integer indicating the average degree of the network, i.e. the average number of links each individual (node) has.}
 
-\item{wvals}{A vector with the importance (weight) of each trait-preference combination}
+\item{linktype}{A string indicating the type of network links ('stow', 'detw', or 'unw'; see Details).}
 
-\item{onecomp}{Logical. If TRUE then only networks where all the nodes are in a single component (i.e. at least indirectly connected) are used. If FALSE then the networks may consist of more than one component}
+\item{onecomp}{Logical. If TRUE then the network will consist of a single component, if FALSE then the network may consist of more than one component.}
 
-\item{nrepls}{An integer indicating the number of replicates (number of networks for which metrics will be measured)}
+\item{metrics}{A vector of strings indicating the metrics that should be measured (see Details).}
 
-\item{metrics}{A vector of strings indicating the metrics that should be measured (see Details)}
+\item{nrepls}{An integer indicating the number of replicates (number of networks for which metrics will be measured).}
 
-\item{showrepl}{Logical. If TRUE (default) then the current replicate (network number) is printed to the console}
+\item{showrepl}{Logical. If TRUE (default) then the current replicate (network number) is printed to the console.}
 
-\item{owntraitclasses}{A vector of strings indicating the trait class for each trait for which trait values are provided by the user ('cate' or 'cont'; see Details)}
+\item{owntraitclasses}{Only set if any traits are input by the user (see Details). A vector of strings indicating the trait class for each user-provided trait ('cate' or 'cont'; see Details).}
 
-\item{owntraitvals}{A matrix with \code{n} rows, and a column for each trait for which trait values are provided by the user (if any). Each column must contain a trait value for each each individual. Can be a vector if there is only a single trait}
+\item{owntraitvals}{Only set if any traits are input by the user (see Details). A matrix with trait values for user provided traits (one column for each user-provided trait). Can be a vector if there is only one user-provided trait; see Details.}
 }
 \value{
-a matrix with one row for each network and one column for each metric. The columns are named with the metric names given in the \code{metrics} argument.
+a matrix with metric measurements (one measurement for each metric, for each network replicate). The matrix has one row for each network and one column for each metric. The columns are named with the metric names given in the \code{metrics} argument.
 }
 \description{
-\code{traitnetsmetrics()} measures a set of network metrics on an ensemble of networks based on the trait preference model.
+\code{traitnetsmetrics()} measures a set of network metrics on an ensemble of trait preference networks.
 }
 \details{
-For details about trait preference networks, see the documentation (help page) for the \code{traitnet()} function, and the literature in the References section below.
+For details about trait preferences and generation of trait preference networks, see the documentation (help page) for the \code{traitnet()} function, and the literature in the References section below.
 
-The \code{traittypes}, \code{allncats}, \code{preftypes}, and \code{wvals} arguments must fit together in terms of order (and have the same length),
+Generally about function arguments:
+
+The \code{traittypes}, \code{allncats}, \code{preftypes}, and \code{wvals} arguments must fit together in terms of the order of their contents (and have the same length),
 because the function assumes that the entries in the same place in these vectors fit together.
 For example, the first trait type in the \code{traittypes} vector will be used with the first preference type in the \code{preftypes} vector,
 the first importance value in the \code{wvals} vector, and the first category number (which may be NA) in the \code{allncats} vector.
 
 About \code{traittypes}:
+
+Different trait types correspond to different distributions. A given trait type may be used to model any specific trait that fits with the distribution.
 \itemize{
-\item 'cate'  gives categorical trait values. The values consist of the integers from 1 to \code{ncats}, which each indicates a category. Each category is drawn with the same probability.
+\item 'cate'  gives categorical trait values. The values consist of the integers from 1 to the number of categories, with each integer ndicating a category. Each category is drawn with the same probability.
 \item 'tnorm' gives normally distributed trait values (truncated). The values are drawn from a truncated normal distribution that lie in the interval [0,1], with mean = 0.5 and standard deviation = 0.25.
 \item 'ranks' gives trait values indicating ranks (e.g. social rank). The values are equally distributed in the interval [0,1]. This corresponds to ranks indicated by integers from 1 to n, transformed to the interval [0,1].
 \item 'unif'  gives uniformly distributed trait values. The values are drawn from a uniform distribution with the interval [0,1].
-\item 'own' must be given for any trait where trait values are given as input by the user. For such traits, the class needs to be specified in the \code{owntraitclasses} argument.
+\item 'own' must be given for any trait where trait values are provided by the user.
 }
 
 About \code{preftypes}:
+
+Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
+For similarity preferences, the preference depends on the distance (similarity) between trait values.
+For popularity preferences, the preference depends on the magnitude of the trait values.
 \itemize{
-\item Preference types belong to two general types: 'similarity' and 'popularity' (as described in Brask et al. 2026a and 2026b, see References).
-\item For similarity preferences, the preference depends on the distance (similarity) between trait values.
-\item For popularity preferences, the preference depends on the magnitude of the trait values.
-\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e. they are similar).
-\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. they are dissimilar).
+\item 'simclose' indicates that individuals prefer others that are closer to themselves in terms of their trait value (i.e more similar; homophily).
+\item 'simfar' indicates that individuals prefer others that are farther from themselves in terms of their trait value (i.e. less similar<, heterophily).
 \item 'pophigh' indicates that individuals prefer others that have high trait values (i.e. high trait values are popular).
 \item 'poplow' indicates that individuals prefer others that have low trait values (i.e. low trait values are popular).
 }
@@ -84,35 +89,11 @@ About \code{preftypes}:
 About \code{linktype}:
 \itemize{
 \item 'unw' gives unweighted (binary) links. Existing links are indicated with the value 1, non-existing links are indicated with 0.
-\item 'stow' gives weighted links with stochasticity, where the weights are drawn from distributions with the social attraction values as means.
-\item 'detw' gives deterministic weighted links, where the weight equals the social attraction of the dyad.
-\item For weighted links, the link weights are in the interval [0,1], and existing links have a minimum weight of 0.001.
+\item 'stow' gives weighted links with stochasticity, where the link weights are drawn from distributions with the social attraction values (sociatvals) as means.
+\item 'detw' gives deterministic weighted links, where the link weights equal the social attraction values (sociatvals).
 }
 
-About \code{wvals}:
-\itemize{
-\item The sum of the \code{wval} vector, and each value in the vector, must lie in the interval [0,1], where 0 indicates no importance and 1 indicates full importance.
-}
-
-About \code{owntraitvals} and \code{owntraitclasses}:
-\itemize{
-\item These arguments should only be given if the user wants to provide trait values for one or more of the traits (for example real-world trait values).
-}
-
-About \code{owntraitvals}:
-\itemize{
-\item If the user provides trait values for more than one trait, then \code{owntraitvals} must have one column for each of these traits, and \code{n} rows.
-If the user provides trait values for a single trait then \code{owntraitvals} can be a vector of length \code{n} or a matrix with \code{n} rows and 1 column.
-Categorical trait values should consist of integers that each indicates a category.
-Continuous trait values should consist of numbers between 0 and 1, and empirical trait values on other scales should be transformed to this scale before being used.
-The trait values must fit with the trait classes given in the \code{owntraitclasses} argument.
-}
-
-About \code{owntraitclasses}:
-\itemize{
-\item Give 'cate' for categorical traits.
-\item Give 'cont' for continuous traits.
-}
+For weighted links, the link weights are in the interval [0,1], and existing links have a minimum weight of 0.001.
 
 About \code{metrics}:
 \itemize{
@@ -123,35 +104,51 @@ About \code{metrics}:
 \itemize{
 \item For networks with more than one component: nodes in different network components are considered to have no path between them and these dyads therefore do not contribute to path length calculations.
 }
-\item 'average degree' gives the average degree.
-\item 'average w. degree' gives the average weighted degree (also called strength).
+\item 'average degree' gives the average degree, i.e. the average number of links connected to each node.
+\item 'average w. degree' gives the average weighted degree (also called strength), i.e. the sum of the weights of the links connected to each node.
 \item 'degree assortativity' gives the degree assortativity.
 \item 'w. degree assortativity' gives the weighted degree assortativity.
 \item 'degree variation' gives the degree variation (variance).
 \item 'w. degree variation' gives the weighted degree variation (variance).
 }
+
+About \code{owntraitvals} and \code{owntraitclasses}:
+
+These arguments should only be given if the user wants to provide trait values for one or more of the traits (for example real-world trait values).
+
+About \code{owntraitvals}:
+
+If the user provides trait values for more than one trait, then \code{owntraitvals} must have one column for each of these traits, and \code{n} rows.
+If the user provides trait values for a single trait, then \code{owntraitvals} can be a vector of length \code{n} or a matrix with one column and \code{n} rows.
+Categorical trait values must consist of integers that each indicates a category.
+Continuous trait values must consist of numbers between 0 and 1 (the user must transform trait values on other scales to this scale before giving them as input).
+
+About \code{owntraitclasses}:
+\itemize{
+\item Give 'cate' for categorical traits.
+\item Give 'cont' for continuous traits.
+}
 }
 \examples{
 
-# An example where all arguments are defined directly in the call:
+# An example where the networks are based on two trait preferences, and three metrics are measured on ten networks:
 
-traitnetsmetrics(n=100, k=10, traittypes = c('cate', 'tnorm'),
-allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), linktype = 'stow',
-wvals = c(0.9, 0.1), onecomp = TRUE, nrepls = 10,
-metrics = c('clustering', 'average path length', 'average degree'))
+metricresults <- traitnetsmetrics(traittypes = c('cate', 'tnorm'), allncats = c(5, NA), preftypes = c('simclose', 'pophigh'), wvals = c(0.9, 0.1), n=100, k=10, linktype = 'stow',
+onecomp = TRUE, metrics = c('clustering', 'average path length', 'average degree'), nrepls = 10)
 
 
-# An example where some arguments are defined before the call,
-# and the metric measurements are stored:
+# An example where some arguments (the larger ones) are defined before the call.
+# Here, the networks are based on three preferences, and four metrics are measured on one hundred networks:
 
-metrics <- c('average w. path length', 'w. clustering', 'degree assortativity', 'degree variation')
 traittypes <- c('tnorm', 'cate', 'ranks')
-preftypes <- c('simfar', 'simclose', 'pophigh')
 allncats <- c(5, 2, NA)
+preftypes <- c('simfar', 'simclose', 'pophigh')
 wvals <- c(0.5, 0.2, 0.2)
-metricresults <- traitnetsmetrics(n=100, k=10, traittypes = traittypes,
-allncats = allncats, preftypes = preftypes, linktype = 'stow', wvals = wvals,
-onecomp = TRUE, nrepls = 100, metrics = metrics)
+metrics <- c('average w. path length', 'w. clustering', 'degree assortativity', 'degree variation')
+
+metricresults <- traitnetsmetrics(traittypes = traittypes, allncats = allncats,
+preftypes = preftypes, wvals = wvals, n=100, k=10, linktype = 'stow',
+onecomp = TRUE, metrics = metrics, nrepls = 100)
 
 }
 \references{

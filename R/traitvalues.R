@@ -5,18 +5,19 @@
 #' `traitvalues()` generates a vector of trait values based on a given trait type.
 #'
 #'
-#' To generate trait values, the function draws values from a distribution that corresponds to the given trait type.
+#' NOTE: If the trait values are to be used in the generation of trait preference networks, then it is better to use the `traitnet()` or `traitnetsmetrics()` function (which call this function).
 #'
-#' To make networks based on trait preferences, it is recommended to use the `traitnet()` or `traitnetsmetrics()` functions.
-#' Those functions call this function and there is no need to use this function directly.
+#' To generate trait values, the `traitvalues()` function draws values from a distribution that corresponds to the given trait type.
 #'
 #' About `traittype`:
-#' * 'cate'  gives categorical trait values. The values consist of the integers from 1 to `ncats`, which each indicates a category. Each category is drawn with the same probability.
+#'
+#' Different trait types correspond to different distributions. A given trait type may be used to model any specific trait that fits with the distribution.
+#' * 'cate'  gives categorical trait values. The values consist of the integers from 1 to the number of categories, with each integer ndicating a category. Each category is drawn with the same probability.
 #' * 'tnorm' gives normally distributed trait values (truncated). The values are drawn from a truncated normal distribution that lie in the interval \[0,1], with mean = 0.5 and standard deviation = 0.25.
-#' * 'ranks' gives trait values indicating ranks (e.g. social rank). The values are homogeneously distributed in the interval \[0,1]. This corresponds to ranks indicated by integers from 1 to `n`, transformed to the interval \[0,1].
+#' * 'ranks' gives trait values indicating ranks (e.g. social rank). The values are equally distributed in the interval \[0,1]. This corresponds to ranks indicated by integers from 1 to n, transformed to the interval \[0,1].
 #' * 'unif'  gives uniformly distributed trait values. The values are drawn from a uniform distribution with the interval \[0,1].
 
-#' @param n An integer indicating the number of trait values to be made (i.e. number of individuals for which the trait values are made)
+#' @param n An integer indicating the number of trait values to be made (e.g. the number of individuals for which the trait values are made)
 #' @param traittype A string indicating the trait type ('cate', 'tnorm', 'ranks', or 'unif'; see Details)
 #' @param ncats An integer indicating the number of categories (only used if `traittype` is set to categorical)
 #'
